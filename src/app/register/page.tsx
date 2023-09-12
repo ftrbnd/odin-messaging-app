@@ -44,7 +44,8 @@ export default function Register() {
         body: JSON.stringify({
           email,
           username,
-          password
+          password,
+          authMethod: 'credentials'
         })
       });
 
