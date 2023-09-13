@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
-import SignOutButton from '@/components/SignOutButton';
 
 export default async function Account() {
   const session = await getServerSession();
@@ -14,8 +13,6 @@ export default async function Account() {
       <p>{`Hello ${session.user?.name}!`}</p>
       <p>Email: {session.user?.email}</p>
       {session.user?.image && <Image src={session.user.image} width={200} height={200} alt={`Picture of ${session.user?.name}`} />}
-
-      <SignOutButton />
     </>
   );
 }
