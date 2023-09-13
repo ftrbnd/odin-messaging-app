@@ -1,12 +1,16 @@
-import Message from '@/models/Message';
-import dbConnect from '@/utils/dbConnect';
+import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
+
+const prisma = new PrismaClient();
 
 export async function GET(_request: Request, { params }: { params: { id: string } }) {
   const { id } = params;
 
-  await dbConnect();
-  const message = await Message.findById(id);
+  const message = prisma.message.findUnique({
+    where: {
+      id: id
+    }
+  });
 
   return NextResponse.json({ message }, { status: 200 });
 }

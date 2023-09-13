@@ -1,10 +1,10 @@
-import User from '@/models/User';
-import dbConnect from '@/utils/dbConnect';
+import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
+const prisma = new PrismaClient();
+
 export async function GET() {
-  await dbConnect();
-  const users = await User.find();
+  const users = prisma.user.findMany();
 
   return NextResponse.json({ users }, { status: 200 });
 }

@@ -1,10 +1,10 @@
-import Channel from '@/models/Channel';
-import dbConnect from '@/utils/dbConnect';
+import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
+const prisma = new PrismaClient();
+
 export async function GET() {
-  await dbConnect();
-  const channels = await Channel.find();
+  const channels = prisma.channel.findMany();
 
   return NextResponse.json({ channels }, { status: 200 });
 }
