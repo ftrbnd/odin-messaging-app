@@ -1,26 +1,21 @@
-import { getServerSession } from 'next-auth';
-import { options } from '../api/auth/[...nextauth]/options';
-import SignIn from '@/components/SignIn';
-import SignOut from '@/components/SignOut';
 import Image from 'next/image';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import SignOutButton from '@/components/SignOutButton';
 
 export default async function Account() {
-  const session = await getServerSession(options);
+  const session = await getServerSession();
+  if (!session?.user) redirect('/');
+  console.log('Account page session: ', session);
 
   return (
     <>
       <h1 className="text-2xl text-center">Your Account</h1>
-      {session ? (
-        <>
-          <p>{`Hello ${session.user?.name}!`}</p>
-          <Image src={session.user.image} width={200} height={200} alt={`Picture of ${session.user.name}`} />
-          <p>Email: {session.user.email}</p>
-          <SignOut />
-        </>
-      ) : (
-        <p>{'You are not signed in.'}</p>
-      )}
-      {!session && <SignIn />}
+      <p>{`Hello ${session.user?.name}!`}</p>
+      <p>Email: {session.user?.email}</p>
+      {session.user?.image && <Image src={session.user.image} width={200} height={200} alt={`Picture of ${session.user?.name}`} />}
+
+      <SignOutButton />
     </>
   );
 }

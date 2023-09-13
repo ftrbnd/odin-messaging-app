@@ -1,22 +1,35 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import dbConnect from '@/utils/dbConnect';
-import User from '@/models/User';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-  try {
-    const { email, username, password, avatar, authMethod } = await req.json();
-    let hashedPassword;
-    if (password) hashedPassword = await bcrypt.hash(password, 10);
+  const body = await req.json();
+  const { email, username, password } = body.data;
 
-    await dbConnect();
-
-    const user = password ? await User.create({ email, username, password: hashedPassword, authMethod }) : await User.create({ email, username, avatar, authMethod });
-
-    return NextResponse.json({ message: 'User registered!', user }, { status: 201 });
-  } catch (err) {
-    console.log('Registering error: ', err);
-
-    return NextResponse.json({ message: 'An error occurred while registering the user.' }, { status: 500 });
+  if (!email || !username || !password) {
+    return new NextResponse('Missing email, username, or password', { status: 400 });
   }
+
+  const userExists = await prisma.user.findUnique({
+    where: {
+      email: email
+    }
+  });
+
+  if (userExists) {
+    return new NextResponse('User already exists', { status: 400 });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = await prisma.user.create({
+    data: {
+      email,
+      username,
+      password: hashedPassword
+    }
+  });
+
+  return NextResponse.json(user);
 }
