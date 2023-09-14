@@ -1,3 +1,4 @@
+import Dashboard from '@/components/Dashboard';
 import { getServerSession } from 'next-auth';
 import Link from 'next/link';
 
@@ -8,7 +9,7 @@ export default async function Home() {
   return (
     <>
       {session ? (
-        <></>
+        <Dashboard />
       ) : (
         <div className="hero min-h-screen bg-base-200">
           <div className="hero-content text-center">
