@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 export async function GET(_request: Request, { params }: { params: { id: string } }) {
   const { id } = params;
 
-  const channel = prisma.channel.findUnique({
+  const channel = await prisma.channel.findUnique({
     where: {
       id: id
     }
