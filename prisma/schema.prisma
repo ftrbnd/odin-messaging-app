@@ -51,6 +51,7 @@ enum ChannelType {
 
 model Channel {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String?
   channelType ChannelType? @default(DM)
   userIds     String[]     @db.ObjectId
   users       User[]       @relation(fields: [userIds], references: [id])
