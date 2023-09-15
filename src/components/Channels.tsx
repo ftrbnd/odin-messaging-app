@@ -39,9 +39,14 @@ export default function Dashboard() {
     }
   }, [session.data?.user]);
 
-  const closeModal = () => {
+  const openModal = () => {
     const modal = document.getElementById('new_chat_modal')! as any;
     modal.showModal();
+  };
+
+  const closeModal = () => {
+    const modal = document.getElementById('new_chat_modal')! as any;
+    modal.close();
   };
 
   const createNewChannel = async (user: UserDocument) => {
@@ -78,7 +83,7 @@ export default function Dashboard() {
     <div>
       <div className="flex justify-between h-full items-center">
         <h2 className="text-lg font-bold text-center">Chats</h2>
-        <button className="btn btn-outline btn-primary" onClick={closeModal}>
+        <button className="btn btn-outline btn-primary" onClick={openModal}>
           New
         </button>
         <dialog id="new_chat_modal" className="modal sm:modal-middle" onClose={() => setSearchResults([])}>
