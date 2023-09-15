@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { NextSessionProvider } from '@/context/NextSessionProvider';
 import { ChannelProvider } from '@/context/ChannelProvider';
+import Footer from '@/components/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <body className={inter.className}>
             <Navbar />
             {children}
+            <Footer />
           </body>
         </ChannelProvider>
       </NextSessionProvider>
