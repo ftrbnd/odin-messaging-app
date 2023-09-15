@@ -4,7 +4,7 @@ import { ChannelDocument } from '@/models/Channel';
 import { PropsWithChildren, createContext, useContext, useState } from 'react';
 
 type ChannelState = {
-  channel: ChannelDocument;
+  channel: ChannelDocument | null;
   setChannel(channel: ChannelDocument): void;
 };
 
@@ -21,10 +21,7 @@ const useChannel = (): ChannelState => {
 };
 
 export const ChannelProvider = (props: PropsWithChildren) => {
-  const [channel, setChannel] = useState<ChannelDocument>({
-    name: 'default-channel',
-    channelType: 'DM'
-  });
+  const [channel, setChannel] = useState<ChannelDocument | null>(null);
 
   return <ChannelContext.Provider value={{ channel, setChannel }}>{props.children}</ChannelContext.Provider>;
 };
