@@ -18,8 +18,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     const getChannels = async (id: string) => {
-      console.log('getting channels');
-
       const res = await fetch(`http://localhost:3000/api/channels?userId=${id}`, {
         method: 'GET',
         headers: {
@@ -33,7 +31,6 @@ export default function Dashboard() {
 
     if (session.data?.user) {
       getChannels(session.data?.user.id).then((data) => {
-        console.log(data.channels);
         setChannels(data.channels);
       });
     }
@@ -50,8 +47,6 @@ export default function Dashboard() {
   };
 
   const createNewChannel = async (user: UserDocument) => {
-    console.log(`Creating new chat with ${user.username}...`);
-
     // TODO: Create api route to create new channels
     const res = await fetch(`http://localhost:3000/api/channels/new`, {
       method: 'POST',
@@ -62,8 +57,6 @@ export default function Dashboard() {
     });
 
     closeModal();
-
-    console.log(res);
   };
 
   const searchUsers = async (e: FormEvent) => {
