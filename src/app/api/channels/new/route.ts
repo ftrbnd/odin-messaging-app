@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
 
   const { newUser }: { newUser: UserDocument } = await request.json();
 
-  dbConnect();
+  await dbConnect();
   const channel = new Channel({
     name: 'DM Chat',
     channelType: 'DM',
