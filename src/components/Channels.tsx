@@ -1,22 +1,16 @@
 'use client';
 
 import useChannel from '@/context/ChannelProvider';
-import { Channel } from '@/types/channel-d';
-import { User } from '@/types/user-d';
+import { ChannelDocument } from '@/models/Channel';
+import { UserDocument } from '@/models/User';
 import { useSession } from 'next-auth/react';
 import { FormEvent, useEffect, useState } from 'react';
 
-const emptyChannel: Channel = {
-  id: '-1',
-  name: 'default',
-  channelType: 'dm'
-};
-
 export default function Dashboard() {
-  const [channels, setChannels] = useState<Channel[]>([emptyChannel]);
+  const [channels, setChannels] = useState<ChannelDocument[]>([]);
 
   const [searchUser, setSearchUser] = useState('');
-  const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [searchResults, setSearchResults] = useState<UserDocument[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
   const channel = useChannel();
@@ -24,7 +18,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     const getChannels = async (id: string) => {
-      const res = await fetch(`http://localhost:3000/api/users/${id}/channels`, {
+      console.log('getting channels');
+
+      const res = await fetch(`http://localhost:3000/api/channels?userId=${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -48,22 +44,28 @@ export default function Dashboard() {
     modal.showModal();
   };
 
-  const createNewChannel = async (user: User) => {
-    console.log('Creating new chat with user...', user);
+  const createNewChannel = async (user: UserDocument) => {
+    console.log(`Creating new chat with ${user.username}...`);
 
     // TODO: Create api route to create new channels
-    const res = await fetch(`http://localhost:3000/users/${user.id}/channels/new`, {
+    const res = await fetch(`http://localhost:3000/api/channels/new`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      body: JSON.stringify({ newUser: user })
     });
+
+    closeModal();
+
+    console.log(res);
   };
 
   const searchUsers = async (e: FormEvent) => {
     e.preventDefault();
     setSearchLoading(true);
 
+    // TODO: filter search results by input text
     // TODO: limit users to 5 and populate only username and avatar
     const res = await fetch('http://localhost:3000/api/users');
     const data = await res.json();
@@ -92,9 +94,9 @@ export default function Dashboard() {
               </form>
 
               <ul>
-                {searchResults.map((result: User) => (
-                  <li key={result.id} onClick={() => createNewChannel(result)}>
-                    <a>{result.username}</a>
+                {searchResults.map((result: UserDocument) => (
+                  <li key={result._id} onClick={() => createNewChannel(result)}>
+                    {session.data?.user && result._id !== session.data?.user.id && <a>{result.username}</a>}
                   </li>
                 ))}
               </ul>
@@ -111,11 +113,13 @@ export default function Dashboard() {
       </div>
 
       <div className="divider"></div>
-      {channels.map((ch) => (
-        <li onClick={() => channel.setChannel(ch)} key={ch.id}>
-          {ch.name}
-        </li>
-      ))}
+      <ul>
+        {channels.map((ch: ChannelDocument) => (
+          <li key={ch._id} onClick={() => channel.setChannel(ch)}>
+            {ch.name}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

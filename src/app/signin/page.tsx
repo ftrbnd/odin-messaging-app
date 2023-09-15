@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 
-interface SignUpData {
+interface SignInData {
   email: string;
   password: string;
 }
@@ -12,11 +12,11 @@ interface SignUpData {
 const isValidEmail = (email: string) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
 
 export default function SignIn() {
-  const [data, setData] = useState<SignUpData>({
+  const [data, setData] = useState<SignInData>({
     email: '',
     password: ''
   });
-  const [indicator, setIndicator] = useState<SignUpData>({
+  const [indicator, setIndicator] = useState<SignInData>({
     email: '',
     password: ''
   });

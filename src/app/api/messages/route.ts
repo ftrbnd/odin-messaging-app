@@ -1,8 +1,10 @@
-import prisma from '@/lib/prisma';
+import dbConnect from '@/lib/dbConnect';
+import Message, { MessageDocument } from '@/models/Message';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const messages = await prisma.message.findMany();
+  dbConnect();
+  const messages = await Message.find<MessageDocument>({});
 
   return NextResponse.json({ messages }, { status: 200 });
 }
