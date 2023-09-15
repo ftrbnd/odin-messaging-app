@@ -9,7 +9,7 @@ import { FormEvent, useEffect, useState } from 'react';
 export default function Dashboard() {
   const [channels, setChannels] = useState<ChannelDocument[]>([]);
 
-  const [searchUser, setSearchUser] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState<UserDocument[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
@@ -48,28 +48,39 @@ export default function Dashboard() {
 
   const createNewChannel = async (user: UserDocument) => {
     // TODO: Create api route to create new channels
-    const res = await fetch(`http://localhost:3000/api/channels/new`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ newUser: user })
-    });
-
-    closeModal();
+    try {
+      const res = await fetch(`http://localhost:3000/api/channels/new`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ newUser: user })
+      });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      closeModal();
+    }
   };
 
-  const searchUsers = async (e: FormEvent) => {
+  const searchInputs = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (!searchInput || !searchInput.trim()) return;
     setSearchLoading(true);
 
-    // TODO: filter search results by input text
-    // TODO: limit users to 5 and populate only username and avatar
-    const res = await fetch('http://localhost:3000/api/users');
-    const data = await res.json();
+    try {
+      // TODO: filter search results by input text
+      // TODO: limit users to 5 and populate only username and avatar
+      const res = await fetch(`http://localhost:3000/api/users?search=${searchInput}`);
+      const data = await res.json();
 
-    setSearchResults(data.users);
-    setSearchLoading(false);
+      setSearchResults(data.users);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSearchLoading(false);
+    }
   };
 
   return (
@@ -84,9 +95,9 @@ export default function Dashboard() {
             <h3 className="font-bold text-lg">New Chat</h3>
 
             <div className="dropdown flex flex-col gap-2">
-              <form onSubmit={(e) => searchUsers(e)} className="flex justify-between">
-                <input value={searchUser} onChange={(e) => setSearchUser(e.target.value)} type="text" placeholder="Another user" className="input input-bordered w-full max-w-xs" />
-                <button className={`btn btn-outline btn-primary ${searchLoading && 'btn-disabled'}`} onClick={searchUsers}>
+              <form onSubmit={(e) => searchInputs(e)} className="flex justify-between">
+                <input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} type="text" placeholder="Another user" className="input input-bordered w-full max-w-xs" />
+                <button className={`btn btn-outline btn-primary ${searchLoading && 'btn-disabled'}`} onClick={searchInputs}>
                   {searchLoading ? 'Searching...' : 'Search'}
                 </button>
               </form>
