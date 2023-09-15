@@ -8,7 +8,7 @@ export interface UserDocument {
   email: string;
   emailVerified?: boolean;
   image?: string;
-  friends?: [Types.ObjectId];
+  friends?: [UserDocument];
 }
 
 const UserSchema = new Schema<UserDocument>(

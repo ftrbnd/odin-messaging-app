@@ -1,4 +1,5 @@
 import mongoose, { Types } from 'mongoose';
+import { UserDocument } from './User';
 const Schema = mongoose.Schema;
 
 export interface MessageDocument {
@@ -6,7 +7,7 @@ export interface MessageDocument {
   text: string;
   media?: string[];
   timestamp: Date;
-  author: Types.ObjectId;
+  author: UserDocument;
 }
 
 const MessageSchema = new Schema<MessageDocument>(
