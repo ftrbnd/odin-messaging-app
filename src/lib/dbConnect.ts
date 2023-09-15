@@ -21,10 +21,11 @@ async function dbConnect() {
   }
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false
+      bufferCommands: false,
+      autoIndex: process.env.NODE_ENV === 'development'
     };
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      console.log('Connected to MongoDB');
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then(async (mongoose) => {
+      console.log('Connected to MongoDB!');
       return mongoose;
     });
   }

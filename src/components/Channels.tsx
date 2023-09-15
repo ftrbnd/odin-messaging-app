@@ -73,6 +73,8 @@ export default function Dashboard() {
       // TODO: filter search results by input text
       // TODO: limit users to 5 and populate only username and avatar
       const res = await fetch(`http://localhost:3000/api/users?search=${searchInput}`);
+      if (!res.ok) throw new Error(`Failed to search for "${searchInput}"`);
+
       const data = await res.json();
 
       setSearchResults(data.users);

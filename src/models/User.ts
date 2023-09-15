@@ -45,7 +45,7 @@ const UserSchema = new Schema(
   { versionKey: false }
 );
 
-UserSchema.index({ username: 1 });
+UserSchema.index({ username: 'text' });
 UserSchema.on('index', (err) => {
   if (err) console.log(err.message);
   else console.log('Username index created!');
