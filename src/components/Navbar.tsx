@@ -3,6 +3,7 @@ import Link from 'next/link';
 import React from 'react';
 import Image from 'next/image';
 import SignOutButton from './SignOutButton';
+import HamburgerButton from './HamburgerButton';
 
 export default async function Navbar() {
   const session = await getServerSession();
@@ -13,13 +14,18 @@ export default async function Navbar() {
 
   return (
     <div className="navbar bg-base-100">
+      <HamburgerButton />
       <div className="flex-1">
         <Link className="btn btn-ghost normal-case text-xl" href={'/'}>
           Home
         </Link>
       </div>
       <div className="flex-none">
-        {session && <p className="btn btn-ghost normal-case text-xl">{session?.user?.name}</p>}
+        {session && (
+          <Link href={'/account'}>
+            <p className="btn btn-ghost normal-case text-xl">{session?.user?.name}</p>
+          </Link>
+        )}
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
             <div className="w-10 rounded-full">

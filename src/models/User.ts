@@ -1,7 +1,8 @@
-import mongoose, { Document, Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 const Schema = mongoose.Schema;
 
-interface IUser {
+export interface UserDocument {
+  _id?: string;
   username: string;
   password: string;
   email: string;
@@ -10,9 +11,7 @@ interface IUser {
   friends?: [Types.ObjectId];
 }
 
-export type UserDocument = IUser & Document;
-
-const UserSchema = new Schema(
+const UserSchema = new Schema<UserDocument>(
   {
     username: {
       type: String,
@@ -51,4 +50,4 @@ UserSchema.on('index', (err) => {
   else console.log('Username index created!');
 });
 
-export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+export default mongoose.models.User || mongoose.model<UserDocument>('User', UserSchema);

@@ -1,16 +1,15 @@
-import mongoose, { Document, Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 const Schema = mongoose.Schema;
 
-interface IMessage {
+export interface MessageDocument {
+  _id?: string;
   text: string;
   media?: string[];
   timestamp: Date;
   author: Types.ObjectId;
 }
 
-export type MessageDocument = IMessage & Document;
-
-const MessageSchema = new Schema(
+const MessageSchema = new Schema<MessageDocument>(
   {
     text: {
       type: String,
@@ -33,4 +32,4 @@ const MessageSchema = new Schema(
   { versionKey: false }
 );
 
-export default mongoose.models.Message || mongoose.model<IMessage>('Message', MessageSchema);
+export default mongoose.models.Message || mongoose.model<MessageDocument>('Message', MessageSchema);

@@ -1,4 +1,6 @@
-import mongoose, { Document, Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
+import { UserDocument } from './User';
+import { MessageDocument } from './Message';
 const Schema = mongoose.Schema;
 
 enum ChannelType {
@@ -6,16 +8,15 @@ enum ChannelType {
   GROUP = 'GROUP'
 }
 
-interface IChannel {
+export interface ChannelDocument {
+  _id?: string;
   name: string;
   channelType: string;
-  users?: [Types.ObjectId];
-  messages?: [Types.ObjectId];
+  users?: [UserDocument];
+  messages?: [MessageDocument];
 }
 
-export type ChannelDocument = IChannel & Document;
-
-const ChannelSchema = new Schema(
+const ChannelSchema = new Schema<ChannelDocument>(
   {
     name: {
       type: String,
@@ -42,4 +43,4 @@ const ChannelSchema = new Schema(
   { versionKey: false }
 );
 
-export default mongoose.models.Channel || mongoose.model<IChannel>('Channel', ChannelSchema);
+export default mongoose.models.Channel || mongoose.model<ChannelDocument>('Channel', ChannelSchema);

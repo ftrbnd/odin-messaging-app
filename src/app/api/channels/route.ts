@@ -1,18 +1,28 @@
 import dbConnect from '@/lib/dbConnect';
 import Channel, { ChannelDocument } from '@/models/Channel';
+import mongoose from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const userId = request.nextUrl.searchParams.get('userId');
 
-  await dbConnect();
-  let channels;
-  if (userId) {
-    // TODO: filter channels by their users list that contain the current user's id
-    channels = await Channel.find<ChannelDocument>({});
-  } else {
-    channels = await Channel.find<ChannelDocument>({});
-  }
+  try {
+    await dbConnect();
 
-  return NextResponse.json({ channels }, { status: 200 });
+    let channels;
+    if (userId) {
+      const userObjectId = new mongoose.Types.ObjectId(userId);
+
+      channels = await Channel.find({
+        users: userObjectId
+      }).populate('users');
+    } else {
+      channels = await Channel.find<ChannelDocument>({});
+    }
+
+    return NextResponse.json({ channels }, { status: 200 });
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json({ err }, { status: 400 });
+  }
 }

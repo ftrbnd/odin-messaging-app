@@ -18,15 +18,24 @@ export default function Dashboard() {
 
   useEffect(() => {
     const getChannels = async (id: string) => {
-      const res = await fetch(`http://localhost:3000/api/channels?userId=${id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      try {
+        const res = await fetch(`http://localhost:3000/api/channels?userId=${id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
 
-      const data = res.json();
-      return data;
+        if (!res.ok) {
+          throw new Error('Failed to fetch channels.');
+        }
+
+        const data = res.json();
+        return data;
+      } catch (err: any) {
+        console.error(err.message);
+        return { channels: [] };
+      }
     };
 
     if (session.data?.user) {
@@ -85,6 +94,10 @@ export default function Dashboard() {
     }
   };
 
+  const handleChannelClick = (ch: ChannelDocument) => {
+    channel.setChannel(ch);
+  };
+
   return (
     <div>
       <div className="flex justify-between h-full items-center">
@@ -124,10 +137,10 @@ export default function Dashboard() {
       </div>
 
       <div className="divider"></div>
-      <ul>
+      <ul className="menu bg-base-200 w-56 rounded-box">
         {channels.map((ch: ChannelDocument) => (
-          <li key={ch._id} onClick={() => channel.setChannel(ch)}>
-            {ch.name}
+          <li key={ch._id} onClick={() => handleChannelClick(ch)}>
+            <a className={ch._id === channel.channel._id ? 'active' : ''}>{ch.name}</a>
           </li>
         ))}
       </ul>
