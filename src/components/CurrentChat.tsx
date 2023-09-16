@@ -25,6 +25,7 @@ export default function CurrentChat() {
       const { channel: channelCreated }: { channel: ChannelDocument } = await res.json();
 
       channel.setChannel(channelCreated);
+      setTextInput('');
     } catch (err) {
       console.error('Fail sending message: ', err);
     }
@@ -53,7 +54,12 @@ export default function CurrentChat() {
           </div>
           <div className="chat-bubble">{message.text}</div>
           <div className="chat-footer opacity-50">
-            <time className="text-xs opacity-50">{new Date(`${message.createdAt}`).toTimeString()}</time>
+            <time className="text-xs opacity-50">
+              {new Date(`${message.createdAt}`).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </time>
           </div>
         </div>
       ))}
