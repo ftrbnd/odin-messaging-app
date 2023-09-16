@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     const channels = await Channel.find<ChannelDocument[]>({
       users: userObjectId
     })
-      .populate('users')
+      .populate(['users', { path: 'messages', populate: { path: 'author' } }])
       .sort({ updatedAt: -1 });
 
     return NextResponse.json({ channels }, { status: 200 });
