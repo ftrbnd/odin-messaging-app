@@ -1,24 +1,23 @@
 import dbConnect from '@/lib/dbConnect';
 import Channel, { ChannelDocument } from '@/models/Channel';
 import mongoose from 'mongoose';
+import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  const userId = request.nextUrl.searchParams.get('userId');
+  const token = await getToken({ req: request });
+  if (!token) return new NextResponse('No active session/token to get user channels', { status: 404 });
 
   try {
     await dbConnect();
 
-    let channels;
-    if (userId) {
-      const userObjectId = new mongoose.Types.ObjectId(userId);
+    const userObjectId = new mongoose.Types.ObjectId(token.id);
 
-      channels = await Channel.find({
-        users: userObjectId
-      }).populate('users');
-    } else {
-      channels = await Channel.find<ChannelDocument>({});
-    }
+    const channels = await Channel.find<ChannelDocument[]>({
+      users: userObjectId
+    })
+      .populate('users')
+      .sort({ updatedAt: -1 });
 
     return NextResponse.json({ channels }, { status: 200 });
   } catch (err) {
