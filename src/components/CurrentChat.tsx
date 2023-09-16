@@ -2,6 +2,7 @@
 
 import useChannel from '@/context/ChannelProvider';
 import { ChannelDocument } from '@/models/Channel';
+import { UserDocument } from '@/models/User';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { FormEvent, useState } from 'react';
@@ -31,6 +32,24 @@ export default function CurrentChat() {
     }
   };
 
+  const manageFriend = async (user: UserDocument) => {
+    console.log('FRIEND?: ', user);
+
+    try {
+      const res = await fetch(`http://localhost:3000/api/users/${user._id}`, {
+        method: 'POST',
+        body: JSON.stringify({ adding: !user.friends?.find((f) => f._id === session.data?.user.id) })
+      });
+
+      const data = await res.json();
+      console.log(data);
+
+      channel.refetch();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-between">
       <div className="flex justify-center w-full">
@@ -38,9 +57,16 @@ export default function CurrentChat() {
           (user) =>
             session.data?.user &&
             session.data.user.id !== user._id && (
-              <kbd key={user._id} className="kbd">
-                {user.username}
-              </kbd>
+              <div key={user._id} className="dropdown dropdown-hover">
+                <kbd tabIndex={0} className="kbd hover:cursor-pointer hover:bg-primary">
+                  {user.username}
+                </kbd>
+                <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                  <li onClick={() => manageFriend(user)}>
+                    <a>{user.friends?.find((f) => f._id === session.data.user.id) ? 'Remove Friend' : 'Add Friend'}</a>
+                  </li>
+                </ul>
+              </div>
             )
         )}
       </div>
