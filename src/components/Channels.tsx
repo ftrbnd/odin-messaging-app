@@ -95,12 +95,13 @@ export default function Dashboard() {
   };
 
   const getChannelTitle = (channel: ChannelDocument): string => {
-    if (!channel.users || !session.data?.user) return '';
+    if (!channel.users || !session.data?.user) return 'null';
 
     if (channel.channelType === 'DM') {
       // return name of other user
       return channel.users[0]._id === session.data.user.id ? channel.users[1].username : channel.users[0].username;
-    } else if (channel.channelType === 'GROUP') {
+    } else {
+      // channel.channelType is 'GROUP' in this case
       // return 'name, name, ...'
       let users: string[] = [];
       for (let i = 0; i < channel.users.length; i++) {
