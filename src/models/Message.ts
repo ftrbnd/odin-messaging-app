@@ -1,4 +1,4 @@
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 import { UserDocument } from './User';
 const Schema = mongoose.Schema;
 
