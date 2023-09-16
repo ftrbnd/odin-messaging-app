@@ -157,7 +157,7 @@ export default function Dashboard() {
       </div>
 
       <div className="divider"></div>
-      <ul className="menu bg-base-200 w-56 rounded-box">
+      <ul className="menu bg-base-200 w-full rounded-box gap-2">
         {channels.map((ch: ChannelDocument) => (
           <li key={ch._id} onClick={() => handleChannelClick(ch)}>
             <a className={ch._id === channel.channel?._id ? 'active' : ''}>{getChannelTitle(ch)}</a>
