@@ -17,9 +17,9 @@ export default function Dashboard() {
   const session = useSession();
 
   useEffect(() => {
-    const getChannels = async (id: string) => {
+    const getChannels = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/channels?userId=${id}`, {
+        const res = await fetch(`http://localhost:3000/api/channels`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -39,7 +39,7 @@ export default function Dashboard() {
     };
 
     if (session.data?.user) {
-      getChannels(session.data?.user.id).then((data) => {
+      getChannels().then((data) => {
         setChannels(data.channels);
       });
     }
@@ -94,6 +94,25 @@ export default function Dashboard() {
     }
   };
 
+  const getChannelTitle = (channel: ChannelDocument): string => {
+    if (!channel.users || !session.data?.user) return '';
+
+    if (channel.channelType === 'DM') {
+      // return name of other user
+      return channel.users[0]._id === session.data.user.id ? channel.users[1].username : channel.users[0].username;
+    } else if (channel.channelType === 'GROUP') {
+      // return 'name, name, ...'
+      let users: string[] = [];
+      for (let i = 0; i < channel.users.length; i++) {
+        if (channel.users[i]._id !== session.data.user.id) {
+          users.push(channel.users[i].username);
+        }
+        if (users.length > 2) break;
+      }
+      return users.join(', ').concat('...');
+    }
+  };
+
   const handleChannelClick = (ch: ChannelDocument) => {
     channel.setChannel(ch);
   };
@@ -140,7 +159,7 @@ export default function Dashboard() {
       <ul className="menu bg-base-200 w-56 rounded-box">
         {channels.map((ch: ChannelDocument) => (
           <li key={ch._id} onClick={() => handleChannelClick(ch)}>
-            <a className={ch._id === channel.channel?._id ? 'active' : ''}>{ch.name}</a>
+            <a className={ch._id === channel.channel?._id ? 'active' : ''}>{getChannelTitle(ch)}</a>
           </li>
         ))}
       </ul>
