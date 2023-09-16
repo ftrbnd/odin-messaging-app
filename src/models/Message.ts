@@ -21,7 +21,6 @@ const MessageSchema = new Schema<MessageDocument>(
       type: [String],
       required: false
     },
-
     author: {
       type: Schema.Types.ObjectId,
       ref: 'User',
