@@ -25,5 +25,5 @@ export async function POST(request: NextRequest) {
 
   const updatedChannel = await Channel.findById(channelId).populate(['users', { path: 'messages', populate: { path: 'author' } }]);
 
-  return NextResponse.json({ message, channel: updatedChannel }, { status: 200 });
+  return NextResponse.json({ channel: updatedChannel }, { status: 200 });
 }
