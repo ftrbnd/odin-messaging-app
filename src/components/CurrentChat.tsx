@@ -18,7 +18,7 @@ export default function CurrentChat() {
   };
 
   return (
-    <div className="w-full h-screen flex flex-col items-center justify-between">
+    <div className="w-full h-full flex flex-col items-center justify-between">
       <div className="flex justify-center w-full">
         {channel.channel?.users?.map(
           (user) =>

@@ -13,7 +13,7 @@ export default async function Navbar() {
   };
 
   return (
-    <div className="navbar bg-base-100">
+    <nav className="navbar bg-base-100">
       <HamburgerButton />
       <div className="flex-1">
         <Link className="btn btn-ghost normal-case text-xl" href={'/'}>
@@ -55,6 +55,6 @@ export default async function Navbar() {
           </ul>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }

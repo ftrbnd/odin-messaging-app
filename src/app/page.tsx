@@ -11,13 +11,13 @@ export default async function Home() {
       {session ? (
         <Dashboard />
       ) : (
-        <div className="hero min-h-screen bg-base-200">
+        <div className="hero h-full bg-base-200">
           <div className="hero-content text-center">
             <div className="max-w-md">
               <h1 className="text-5xl font-bold">Hello there</h1>
               <p className="py-6">
                 {
-                  "This messaging app is a project that was created following The Odin Project's NodeJS course. I built this with: TypeScript, Next.js, TailwindCSS, DaisyUI, MongoDB, Prisma, and NextAuth."
+                  "This messaging app is a project that was created following The Odin Project's NodeJS course. I built this with: TypeScript, Next.js, TailwindCSS, DaisyUI, MongoDB/Mongoose, and NextAuth."
                 }
               </p>
               <button className="btn btn-primary">
