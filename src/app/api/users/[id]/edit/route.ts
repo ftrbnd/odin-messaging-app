@@ -12,7 +12,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   try {
     await dbConnect();
 
-    const user = await User.findById<UserDocument>(id, {
+    const user = await User.findById(id, {
       username: newUsername,
       email: newEmail
     });
