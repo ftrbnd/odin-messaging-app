@@ -3,29 +3,28 @@ import { UserDocument } from './User';
 import { MessageDocument } from './Message';
 const Schema = mongoose.Schema;
 
-enum ChannelType {
+enum ChannelTypeEnum {
   DM = 'DM',
   GROUP = 'GROUP'
 }
 
+type ChannelType = 'DM' | 'GROUP';
+
 export interface ChannelDocument {
   _id?: string;
-  name: string;
-  channelType: string;
-  users?: [UserDocument];
-  messages?: [MessageDocument];
+  channelType: ChannelType;
+  users?: UserDocument[];
+  messages?: MessageDocument[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const ChannelSchema = new Schema<ChannelDocument>(
   {
-    name: {
-      type: String,
-      required: true
-    },
     channelType: {
       type: String,
       required: true,
-      enum: Object.values(ChannelType)
+      enum: Object.values(ChannelTypeEnum)
     },
     users: [
       {
@@ -40,7 +39,7 @@ const ChannelSchema = new Schema<ChannelDocument>(
       }
     ]
   },
-  { versionKey: false }
+  { versionKey: false, timestamps: true }
 );
 
 export default mongoose.models.Channel || mongoose.model<ChannelDocument>('Channel', ChannelSchema);

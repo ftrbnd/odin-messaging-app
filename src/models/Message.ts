@@ -4,10 +4,11 @@ const Schema = mongoose.Schema;
 
 export interface MessageDocument {
   _id?: string;
-  text: string;
+  text?: string;
   media?: string[];
-  timestamp: Date;
   author: UserDocument;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const MessageSchema = new Schema<MessageDocument>(
@@ -20,17 +21,14 @@ const MessageSchema = new Schema<MessageDocument>(
       type: [String],
       required: false
     },
-    timestamp: {
-      type: Date,
-      required: true
-    },
+
     author: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true
     }
   },
-  { versionKey: false }
+  { versionKey: false, timestamps: true }
 );
 
 export default mongoose.models.Message || mongoose.model<MessageDocument>('Message', MessageSchema);
