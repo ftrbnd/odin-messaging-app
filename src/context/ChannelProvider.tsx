@@ -24,12 +24,22 @@ export const ChannelProvider = (props: PropsWithChildren) => {
   const [channel, setChannel] = useState<ChannelDocument | null>(null);
 
   useEffect(() => {
-    async function getLatestChannel(): Promise<ChannelDocument> {
-      const res = await fetch(`http://localhost:3000/api/channels`);
+    async function getLatestChannel(): Promise<ChannelDocument | null> {
+      try {
+        const res = await fetch(`http://localhost:3000/api/channels`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        if (!res.ok) return null;
 
-      const { channels }: { channels: ChannelDocument[] } = await res.json();
-
-      return channels[0];
+        const { channels }: { channels: ChannelDocument[] } = await res.json();
+        return channels[0];
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
     }
 
     getLatestChannel().then((ch) => setChannel(ch));
