@@ -9,7 +9,7 @@ export default function CurrentChat() {
 
   return (
     <div className="w-full h-full flex justify-center items-start">
-      {channel.channel.users?.map(
+      {channel.channel?.users?.map(
         (user) =>
           session.data?.user &&
           session.data.user.id !== user._id && (

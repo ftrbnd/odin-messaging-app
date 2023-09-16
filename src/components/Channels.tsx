@@ -140,7 +140,7 @@ export default function Dashboard() {
       <ul className="menu bg-base-200 w-56 rounded-box">
         {channels.map((ch: ChannelDocument) => (
           <li key={ch._id} onClick={() => handleChannelClick(ch)}>
-            <a className={ch._id === channel.channel._id ? 'active' : ''}>{ch.name}</a>
+            <a className={ch._id === channel.channel?._id ? 'active' : ''}>{ch.name}</a>
           </li>
         ))}
       </ul>
