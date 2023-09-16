@@ -1,5 +1,5 @@
 import dbConnect from '@/lib/dbConnect';
-import User, { UserDocument } from '@/models/User';
+import User from '@/models/User';
 import { NextRequest, NextResponse } from 'next/server';
 
 // TODO: this only updates the user in mongodb, need to update auth session as well
