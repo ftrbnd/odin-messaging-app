@@ -45,24 +45,26 @@ export default function CurrentChat() {
         )}
       </div>
 
-      {channel.channel?.messages?.map((message) => (
-        <div key={message._id} className={`chat ${message.author._id === session.data?.user.id ? 'chat-end' : 'chat-start'}`}>
-          <div className="chat-image avatar">
-            <div className="w-10 rounded-full">
-              <Image src={message.author.image || '/default.png'} alt={`Avatar of ${message.author.username}`} height={10} width={10} />
+      <div className="h-full w-full flex flex-col">
+        {channel.channel?.messages?.map((message) => (
+          <div key={message._id} className={`chat ${message.author._id === session.data?.user.id ? 'chat-end' : 'chat-start'}`}>
+            <div className="chat-image avatar">
+              <div className="w-10 rounded-full">
+                <Image src={message.author.image || '/default.png'} alt={`Avatar of ${message.author.username}`} height={100} width={100} />
+              </div>
+            </div>
+            <div className="chat-bubble">{message.text}</div>
+            <div className="chat-footer opacity-50">
+              <time className="text-xs opacity-50">
+                {new Date(`${message.createdAt}`).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </time>
             </div>
           </div>
-          <div className="chat-bubble">{message.text}</div>
-          <div className="chat-footer opacity-50">
-            <time className="text-xs opacity-50">
-              {new Date(`${message.createdAt}`).toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </time>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       {channel.channel && (
         <form onSubmit={(e) => sendMessage(e)} className="w-full flex justify-between items-stretch gap-2 p-2">
