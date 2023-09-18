@@ -4,7 +4,6 @@ import Link from 'next/link';
 
 export default async function Home() {
   const session = await getServerSession();
-  console.log('Home page session:', session);
 
   return (
     <>

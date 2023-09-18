@@ -31,7 +31,6 @@ export default function AccountCard() {
         if (!res.ok) throw new Error('Failed to edit user.');
 
         const { user }: { user: UserDocument } = await res.json();
-        console.log('UPDATED USER: ', user);
       }
       setEditing((prev) => !prev);
     } catch (err) {

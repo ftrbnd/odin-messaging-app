@@ -5,7 +5,6 @@ import AccountCard from '@/components/AccountCard';
 export default async function Account() {
   const session = await getServerSession();
   if (!session?.user) redirect('/');
-  console.log('Account page session: ', session);
 
   return (
     <div className="flex h-full flex-col items-center gap-2 px-6 py-12 lg:px-8 bg-base-200">

@@ -28,7 +28,6 @@ export default function Register() {
 
   const router = useRouter();
   const session = useSession();
-  console.log('Register page session: ', session);
 
   useEffect(() => {
     if (session.data?.user) router.push('/');

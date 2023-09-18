@@ -1,10 +1,7 @@
-import { getServerSession } from 'next-auth';
 import Channels from './Channels';
 import CurrentChat from './CurrentChat';
 
 export default async function Dashboard() {
-  const session = await getServerSession();
-
   return (
     <div className="drawer lg:drawer-open h-full">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />

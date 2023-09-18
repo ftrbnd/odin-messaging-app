@@ -25,7 +25,6 @@ export default function SignIn() {
 
   const router = useRouter();
   const session = useSession();
-  console.log('SignIn page session: ', session);
 
   useEffect(() => {
     if (session.data?.user) router.push('/');

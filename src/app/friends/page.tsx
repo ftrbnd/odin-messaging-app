@@ -30,7 +30,6 @@ export default function Friends() {
 
       const { channel: dmChannel } = await res.json();
       channel.setChannel(dmChannel);
-      console.log(dmChannel);
 
       router.push('/');
     } catch (err) {
