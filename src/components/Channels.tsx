@@ -83,8 +83,6 @@ export default function Dashboard() {
     setSearchLoading(true);
 
     try {
-      // TODO: filter search results by input text
-      // TODO: limit users to 5 and populate only username and avatar
       const res = await fetch(`http://localhost:3000/api/users?search=${searchInput}`, {
         method: 'GET',
         headers: {
@@ -135,44 +133,50 @@ export default function Dashboard() {
         <button className="btn btn-outline btn-primary" onClick={openModal}>
           New
         </button>
-        <dialog id="new_chat_modal" className="modal sm:modal-middle" onClose={() => setSearchResults([])}>
-          <div className="modal-box flex flex-col gap-1">
-            <h3 className="font-bold text-lg">New Chat</h3>
+        <dialog
+          id="new_chat_modal"
+          className="modal sm:modal-middle"
+          onClose={() => {
+            setSearchResults([]);
+            setSearchInput('');
+          }}
+        >
+          <div className="modal-box flex flex-col">
+            <h3 className="font-bold text-lg  mb-4">New Chat</h3>
 
             <div className="dropdown flex flex-col gap-2">
               <form onSubmit={(e) => searchForUsers(e)} className="flex justify-between">
-                <input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} type="text" placeholder="Another user" className="input input-bordered w-full max-w-xs" />
+                <input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} type="text" placeholder="Search for user" className="input input-bordered w-full max-w-xs" />
                 <button className={`btn btn-outline btn-primary ${searchLoading && 'btn-disabled'}`} onClick={searchForUsers}>
                   {searchLoading ? 'Searching...' : 'Search'}
                 </button>
               </form>
 
               <ul>
-                {searchResults.map((result: UserDocument) => (
-                  <li key={result._id} onClick={() => createNewChannel(result)}>
-                    {session.data?.user &&
-                      result._id !== session.data?.user.id &&
-                      (result.image ? (
+                {searchResults.map(
+                  (result: UserDocument) =>
+                    session.data?.user &&
+                    result._id !== session.data?.user.id && (
+                      <li key={result._id} onClick={() => createNewChannel(result)}>
                         <div className="flex flex-row">
-                          <div className="avatar">
-                            <div className="w-8 rounded-full">
-                              <Image src={result.image} alt={`Avatar of ${result.username}`} height={8} width={8} />
+                          {result.image ? (
+                            <div className="avatar">
+                              <div className="w-8 rounded-full">
+                                <Image src={result.image} alt={`Avatar of ${result.username}`} height={8} width={8} />
+                              </div>
                             </div>
-                          </div>
+                          ) : (
+                            <div className="avatar placeholder">
+                              <div className="bg-neutral-focus text-neutral-content rounded-full w-8">
+                                <span className="text-xs">{result.username[0].toUpperCase()}</span>
+                              </div>
+                            </div>
+                          )}
                           <a>{result.username}</a>
                         </div>
-                      ) : (
-                        <div className="flex flex-row">
-                          <div className="avatar placeholder">
-                            <div className="bg-neutral-focus text-neutral-content rounded-full w-8">
-                              <span className="text-xs">{result.username[0].toUpperCase()}</span>
-                            </div>
-                          </div>
-                          <a>{result.username}</a>
-                        </div>
-                      ))}
-                  </li>
-                ))}
+                      </li>
+                    )
+                )}
               </ul>
             </div>
 
