@@ -13,6 +13,7 @@ export async function POST(req: Request) {
 
   try {
     await dbConnect();
+
     const [emailExists, usernameExists] = await Promise.all([User.findOne<UserDocument>({ email: email }), User.findOne<UserDocument>({ username: username })]);
 
     if (emailExists || usernameExists) {
