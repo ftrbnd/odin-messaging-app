@@ -71,7 +71,7 @@ export default function CurrentChat() {
         )}
       </div>
 
-      <div className="h-full w-full flex flex-col">
+      <div className="h-full w-full flex flex-col px-2">
         {channel.channel?.messages?.map((message) => (
           <div key={message._id} className={`chat ${message.author._id === session.data?.user.id ? 'chat-end' : 'chat-start'}`}>
             <div className="chat-image avatar">
