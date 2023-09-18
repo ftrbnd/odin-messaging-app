@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google';
 import { NextSessionProvider } from '@/context/NextSessionProvider';
 import { ChannelProvider } from '@/context/ChannelProvider';
 import Footer from '@/components/Footer';
+import { FriendsProvider } from '@/context/FriendsProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -17,11 +18,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <NextSessionProvider>
         <ChannelProvider>
-          <body className={inter.className}>
-            <Navbar />
-            {children}
-            <Footer />
-          </body>
+          <FriendsProvider>
+            <body className={inter.className}>
+              <Navbar />
+              {children}
+              <Footer />
+            </body>
+          </FriendsProvider>
         </ChannelProvider>
       </NextSessionProvider>
     </html>

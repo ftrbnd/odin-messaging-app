@@ -1,6 +1,7 @@
 'use client';
 
 import useChannel from '@/context/ChannelProvider';
+import useFriends from '@/context/FriendsProvider';
 import { ChannelDocument } from '@/models/Channel';
 import { UserDocument } from '@/models/User';
 import { useSession } from 'next-auth/react';
@@ -14,6 +15,7 @@ export default function CurrentChat() {
   const [error, setError] = useState('');
 
   const channel = useChannel();
+  const friends = useFriends();
   const session = useSession();
 
   const sendMessage = async (e: FormEvent) => {
@@ -43,8 +45,6 @@ export default function CurrentChat() {
   };
 
   const manageFriend = async (user: UserDocument) => {
-    console.log('FRIEND?: ', user);
-
     try {
       setFriendLoading(true);
 
@@ -55,6 +55,7 @@ export default function CurrentChat() {
 
       if (!res.ok) throw new Error('Failed to edit friend.');
 
+      friends.refetch();
       channel.refetch();
     } catch (err) {
       console.error(err);

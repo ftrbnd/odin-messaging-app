@@ -19,6 +19,9 @@ export default async function Navbar() {
         <Link className="btn btn-ghost normal-case text-xl" href={'/'}>
           Home
         </Link>
+        <Link className="btn btn-ghost normal-case text-xl" href={'/friends'}>
+          Friends
+        </Link>
       </div>
       <div className="flex-none">
         {session && (

@@ -12,6 +12,7 @@ export async function GET(_request: Request, { params }: { params: { id: string 
   return NextResponse.json({ user }, { status: 200 });
 }
 
+// add or remove friend
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   const token = await getToken({ req: request });
   if (!token) return new NextResponse('No token found to add friend', { status: 404 });
