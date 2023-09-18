@@ -15,6 +15,7 @@ export async function GET(_request: Request, { params }: { params: { id: string 
 // add or remove friend
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   const token = await getToken({ req: request });
+  if (!token) return new NextResponse('No active session/token to create a new channel', { status: 404 });
 
   const { id: friendId } = params;
   const { adding }: { adding: boolean } = await request.json();

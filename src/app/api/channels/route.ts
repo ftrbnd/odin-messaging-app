@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const token = await getToken({ req: request });
+  if (!token) return new NextResponse('No active session/token to create a new channel', { status: 404 });
 
   const friendId = request.nextUrl.searchParams.get('friendId');
 
