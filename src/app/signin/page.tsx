@@ -62,8 +62,6 @@ export default function SignIn() {
         redirect: false
       });
 
-      console.log('SIGNIN RES: ', res);
-
       if (res?.error) throw new Error('Failed to sign in user.');
 
       channel.refetch();
