@@ -1,5 +1,5 @@
 import dbConnect from '@/lib/dbConnect';
-import Channel, { ChannelDocument } from '@/models/Channel';
+import Channel from '@/models/Channel';
 import Message from '@/models/Message';
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';

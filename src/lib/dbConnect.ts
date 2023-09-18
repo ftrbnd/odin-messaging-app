@@ -26,6 +26,7 @@ async function dbConnect() {
       autoIndex: process.env.NODE_ENV === 'development'
     };
     cached.promise = mongoose.connect(MONGODB_URI, opts).then(async (mongoose) => {
+      await Message.countDocuments(); // to avoid MissingSchemaError
       console.log('Connected to MongoDB!');
       return mongoose;
     });
