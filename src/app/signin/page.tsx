@@ -4,6 +4,8 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import useChannel from '@/context/ChannelProvider';
+import useFriends from '@/context/FriendsProvider';
 
 interface SignInData {
   email: string;
@@ -26,6 +28,8 @@ export default function SignIn() {
 
   const router = useRouter();
   const session = useSession();
+  const channel = useChannel();
+  const friends = useFriends();
 
   useEffect(() => {
     if (session.data?.user) router.push('/');
@@ -59,15 +63,17 @@ export default function SignIn() {
       });
 
       if (!res?.ok) throw new Error('Failed to sign in user.');
+
+      channel.refetch();
+      friends.refetch();
+      router.push('/');
+      router.refresh();
     } catch (err) {
       console.error(err);
       setError('Could not sign in user.');
     } finally {
       setLoading(false);
     }
-
-    router.push('/account');
-    router.refresh();
   };
 
   return (

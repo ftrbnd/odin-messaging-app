@@ -4,6 +4,8 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import useChannel from '@/context/ChannelProvider';
+import useFriends from '@/context/FriendsProvider';
 
 interface RegisterData {
   email: string;
@@ -29,6 +31,8 @@ export default function Register() {
 
   const router = useRouter();
   const session = useSession();
+  const channel = useChannel();
+  const friends = useFriends();
 
   useEffect(() => {
     if (session.data?.user) router.push('/');
@@ -70,14 +74,17 @@ export default function Register() {
       });
 
       if (!res.ok) throw new Error('Failed to register user.');
+
+      channel.refetch();
+      friends.refetch();
+      router.push('/');
+      router.refresh();
     } catch (err) {
       console.error(err);
       setError('Could not register user.');
     } finally {
       setLoading(false);
     }
-
-    router.push('/signin');
   };
 
   return (
