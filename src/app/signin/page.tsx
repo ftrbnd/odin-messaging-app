@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
+import Link from 'next/link';
 
 interface SignInData {
   email: string;
@@ -70,7 +71,7 @@ export default function SignIn() {
   };
 
   return (
-    <div className="flex h-full flex-col justify-center px-6 py-12 lg:px-8 bg-base-200">
+    <div className="flex h-full flex-col justify-center items-center px-6 py-12 lg:px-8 bg-base-200 gap-4">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight ">Sign in to your account</h2>
       </div>
@@ -114,7 +115,13 @@ export default function SignIn() {
           {loading && <span className="loading loading-spinner"></span>}
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
+
+        <div className="divider">OR</div>
       </form>
+
+      <Link className="self-center" href={'/register'}>
+        <button className={'btn btn-outline btn-secondary'}>Register</button>
+      </Link>
 
       {error && (
         <div className="toast">
