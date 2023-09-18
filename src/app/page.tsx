@@ -20,9 +20,9 @@ export default async function Home() {
                   "This messaging app is a project that was created following The Odin Project's NodeJS course. I built this with: TypeScript, Next.js, TailwindCSS, DaisyUI, MongoDB/Mongoose, and NextAuth."
                 }
               </p>
-              <button className="btn btn-primary">
-                <Link href={'/signin'}>Get Started</Link>
-              </button>
+              <Link href={'/signin'}>
+                <button className="btn btn-primary">Get Started</button>
+              </Link>
             </div>
           </div>
         </div>
