@@ -5,6 +5,7 @@ import { ChannelDocument } from '@/models/Channel';
 import { UserDocument } from '@/models/User';
 import { useSession } from 'next-auth/react';
 import { FormEvent, useEffect, useState } from 'react';
+import Image from 'next/image';
 
 export default function Dashboard() {
   const [channels, setChannels] = useState<ChannelDocument[]>([]);
@@ -75,7 +76,7 @@ export default function Dashboard() {
     }
   };
 
-  const searchInputs = async (e: FormEvent) => {
+  const searchForUsers = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!searchInput || !searchInput.trim()) return;
@@ -84,12 +85,17 @@ export default function Dashboard() {
     try {
       // TODO: filter search results by input text
       // TODO: limit users to 5 and populate only username and avatar
-      const res = await fetch(`http://localhost:3000/api/users?search=${searchInput}`);
+      const res = await fetch(`http://localhost:3000/api/users?search=${searchInput}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       if (!res.ok) throw new Error(`Failed to search for "${searchInput}"`);
 
-      const data = await res.json();
+      const { users }: { users: UserDocument[] } = await res.json();
 
-      setSearchResults(data.users);
+      setSearchResults(users);
     } catch (err) {
       console.error(err);
       setError(`Could not search for "${searchInput}"`);
@@ -134,9 +140,9 @@ export default function Dashboard() {
             <h3 className="font-bold text-lg">New Chat</h3>
 
             <div className="dropdown flex flex-col gap-2">
-              <form onSubmit={(e) => searchInputs(e)} className="flex justify-between">
+              <form onSubmit={(e) => searchForUsers(e)} className="flex justify-between">
                 <input value={searchInput} onChange={(e) => setSearchInput(e.target.value)} type="text" placeholder="Another user" className="input input-bordered w-full max-w-xs" />
-                <button className={`btn btn-outline btn-primary ${searchLoading && 'btn-disabled'}`} onClick={searchInputs}>
+                <button className={`btn btn-outline btn-primary ${searchLoading && 'btn-disabled'}`} onClick={searchForUsers}>
                   {searchLoading ? 'Searching...' : 'Search'}
                 </button>
               </form>
@@ -144,7 +150,27 @@ export default function Dashboard() {
               <ul>
                 {searchResults.map((result: UserDocument) => (
                   <li key={result._id} onClick={() => createNewChannel(result)}>
-                    {session.data?.user && result._id !== session.data?.user.id && <a>{result.username}</a>}
+                    {session.data?.user &&
+                      result._id !== session.data?.user.id &&
+                      (result.image ? (
+                        <div className="flex flex-row">
+                          <div className="avatar">
+                            <div className="w-8 rounded-full">
+                              <Image src={result.image} alt={`Avatar of ${result.username}`} height={8} width={8} />
+                            </div>
+                          </div>
+                          <a>{result.username}</a>
+                        </div>
+                      ) : (
+                        <div className="flex flex-row">
+                          <div className="avatar placeholder">
+                            <div className="bg-neutral-focus text-neutral-content rounded-full w-8">
+                              <span className="text-xs">{result.username[0].toUpperCase()}</span>
+                            </div>
+                          </div>
+                          <a>{result.username}</a>
+                        </div>
+                      ))}
                   </li>
                 ))}
               </ul>
