@@ -169,7 +169,7 @@ export default function Dashboard() {
                           {result.image ? (
                             <div className="avatar">
                               <div className="w-8 rounded-full">
-                                <Image src={result.image} alt={`Avatar of ${result.username}`} height={8} width={8} />
+                                <Image src={result.image} alt={`Avatar of ${result.username}`} height={8} width={8} priority />
                               </div>
                             </div>
                           ) : (

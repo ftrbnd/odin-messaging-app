@@ -12,7 +12,7 @@ export default function Footer() {
       </aside>
       <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
         <Link href={'https://github.com/ftrbnd'} target="_blank">
-          <Image src={'/github.png'} alt="GitHub logo" width={24} height={24} />
+          <Image src={'/github.png'} alt="GitHub logo" width={24} height={24} priority />
         </Link>
       </nav>
     </footer>

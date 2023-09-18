@@ -54,7 +54,7 @@ export default function AccountCard() {
     <div className="card w-96 bg-base-100 shadow-xl">
       <div className="flex flex-col items-center">
         <figure className="px-10 pt-10">
-          <Image src={session?.user.image || '/default.png'} alt="User image" width={96} height={96} />
+          <Image src={session?.user.image || '/default.png'} alt="User image" width={96} height={96} priority />
         </figure>
       </div>
       <div className="card-body items-center text-center">

@@ -105,7 +105,7 @@ export default function Friends() {
                   {friend.image ? (
                     <div className="avatar">
                       <div className="w-24 rounded-full">
-                        <Image src={friend.image} alt={`Avatar of ${friend.username}`} height={24} width={24} />
+                        <Image src={friend.image} alt={`Avatar of ${friend.username}`} height={24} width={24} priority />
                       </div>
                     </div>
                   ) : (
@@ -146,7 +146,7 @@ export default function Friends() {
                         {result.image ? (
                           <div className="avatar">
                             <div className="w-8 rounded-full">
-                              <Image src={result.image} alt={`Avatar of ${result.username}`} height={8} width={8} />
+                              <Image src={result.image} alt={`Avatar of ${result.username}`} height={8} width={8} priority />
                             </div>
                           </div>
                         ) : (
