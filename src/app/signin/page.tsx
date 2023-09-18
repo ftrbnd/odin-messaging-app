@@ -62,7 +62,9 @@ export default function SignIn() {
         redirect: false
       });
 
-      if (!res?.ok) throw new Error('Failed to sign in user.');
+      console.log('SIGNIN RES: ', res);
+
+      if (res?.error) throw new Error('Failed to sign in user.');
 
       channel.refetch();
       friends.refetch();
@@ -130,8 +132,8 @@ export default function SignIn() {
       </Link>
 
       {error && (
-        <div className="toast">
-          <div className="alert alert-info">
+        <div className="toast toast-top toast-end">
+          <div className="alert alert-error">
             <span>{error}</span>
           </div>
         </div>

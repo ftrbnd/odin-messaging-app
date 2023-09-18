@@ -82,7 +82,7 @@ export default function AccountCard() {
       </div>
 
       {error && (
-        <div className="toast toast-end">
+        <div className="toast toast-top toast-end">
           <div className="alert alert-error">
             <span>{error}</span>
           </div>

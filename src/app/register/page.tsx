@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import useChannel from '@/context/ChannelProvider';
 import useFriends from '@/context/FriendsProvider';
@@ -65,7 +65,7 @@ export default function Register() {
     }
 
     try {
-      const res = await fetch('/api/register', {
+      const registerRes = await fetch('/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -73,7 +73,15 @@ export default function Register() {
         body: JSON.stringify({ data })
       });
 
-      if (!res.ok) throw new Error('Failed to register user.');
+      if (!registerRes.ok) throw new Error('Failed to register user.');
+
+      const signInRes = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false
+      });
+
+      if (!signInRes?.ok) throw new Error('Failed to sign in user after registering.');
 
       channel.refetch();
       friends.refetch();
@@ -158,8 +166,8 @@ export default function Register() {
       </Link>
 
       {error && (
-        <div className="toast">
-          <div className="alert alert-info">
+        <div className="toast toast-top toast-end">
+          <div className="alert alert-error">
             <span>{error}</span>
           </div>
         </div>
