@@ -22,7 +22,7 @@ export default function AccountCard() {
 
     try {
       if (editing && (newUsername !== session?.user.name || newEmail !== session?.user.email)) {
-        const res = await fetch(`/api/users/${session?.user.id}/edit`, {
+        const res = await fetch(`http://localhost:3000/api/users/${session?.user.id}/edit`, {
           method: 'POST',
           body: JSON.stringify({
             newUsername: newUsername !== session?.user.name ? newUsername : '',

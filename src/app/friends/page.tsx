@@ -26,7 +26,7 @@ export default function Friends() {
     if (!friend._id) return;
 
     try {
-      const res = await fetch(`/api/channels?friendId=${friend._id}`, {
+      const res = await fetch(`http://localhost:3000/api/channels?friendId=${friend._id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -50,7 +50,7 @@ export default function Friends() {
     try {
       setFriendLoading(true);
 
-      const res = await fetch(`/api/users/${friend._id}`, {
+      const res = await fetch(`http://localhost:3000/api/users/${friend._id}`, {
         method: 'POST',
         body: JSON.stringify({ adding: false })
       });
@@ -74,7 +74,7 @@ export default function Friends() {
     setSearchLoading(true);
 
     try {
-      const res = await fetch(`/api/users?search=${searchInput}`, {
+      const res = await fetch(`http://localhost:3000/api/users?search=${searchInput}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'

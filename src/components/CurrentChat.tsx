@@ -25,7 +25,7 @@ export default function CurrentChat() {
     try {
       setSendLoading(true);
 
-      const res = await fetch('/api/messages/new', {
+      const res = await fetch('http://localhost:3000/api/messages/new', {
         method: 'POST',
         body: JSON.stringify({ text: textInput, channelId: channel.channel?._id })
       });
@@ -48,7 +48,7 @@ export default function CurrentChat() {
     try {
       setFriendLoading(true);
 
-      const res = await fetch(`/api/users/${user._id}`, {
+      const res = await fetch(`http://localhost:3000/api/users/${user._id}`, {
         method: 'POST',
         body: JSON.stringify({ adding: !user.friends?.find((f) => f._id === session.data?.user.id) })
       });

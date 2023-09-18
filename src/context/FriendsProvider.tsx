@@ -30,7 +30,7 @@ export const FriendsProvider = (props: PropsWithChildren) => {
 
   async function getFriends(): Promise<UserDocument[] | null> {
     try {
-      const res = await fetch(`/api/users/friends`, {
+      const res = await fetch(`http://localhost:3000/api/users/friends`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
