@@ -3,7 +3,7 @@
 import { UserDocument } from '@/models/User';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, MouseEvent } from 'react';
 
 export default function AccountCard() {
   const [editing, setEditing] = useState(false);
@@ -18,7 +18,7 @@ export default function AccountCard() {
     if (session.data?.user.email) setNewEmail(session.data?.user.email);
   }, [session.data?.user.email, session.data?.user.name]);
 
-  const handleClick = async (e: React.MouseEvent) => {
+  const handleClick = async (e: MouseEvent) => {
     e.preventDefault();
 
     try {
