@@ -48,34 +48,6 @@ export default function Dashboard() {
     }
   }, [session.data?.user]);
 
-  const openModal = () => {
-    const modal = document.getElementById('new_chat_modal')! as any;
-    modal.showModal();
-  };
-
-  const closeModal = () => {
-    const modal = document.getElementById('new_chat_modal')! as any;
-    modal.close();
-  };
-
-  const createNewChannel = async (user: UserDocument) => {
-    // TODO: Create api route to create new channels
-    try {
-      const res = await fetch(`http://localhost:3000/api/channels/new`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ newUser: user })
-      });
-    } catch (err) {
-      console.error(err);
-      setError('Could not create new channel.');
-    } finally {
-      closeModal();
-    }
-  };
-
   const searchForUsers = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -102,6 +74,38 @@ export default function Dashboard() {
     }
   };
 
+  const createNewChannel = async (user: UserDocument) => {
+    // TODO: Create api route to create new channels
+    try {
+      const res = await fetch(`http://localhost:3000/api/channels/new`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ newUser: user })
+      });
+    } catch (err) {
+      console.error(err);
+      setError('Could not create new channel.');
+    } finally {
+      closeModal();
+    }
+  };
+
+  const handleChannelClick = (ch: ChannelDocument) => {
+    channel.setChannel(ch);
+  };
+
+  const openModal = () => {
+    const modal = document.getElementById('new_chat_modal')! as any;
+    modal.showModal();
+  };
+
+  const closeModal = () => {
+    const modal = document.getElementById('new_chat_modal')! as any;
+    modal.close();
+  };
+
   const getChannelTitle = (channel: ChannelDocument): string => {
     if (!channel.users || !session.data?.user) return 'null';
 
@@ -120,10 +124,6 @@ export default function Dashboard() {
       }
       return users.join(', ').concat('...');
     }
-  };
-
-  const handleChannelClick = (ch: ChannelDocument) => {
-    channel.setChannel(ch);
   };
 
   return (
