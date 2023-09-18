@@ -28,7 +28,7 @@ export default function Dashboard() {
 
   const getChannels = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/api/channels`, {
+      const res = await fetch(`/api/channels`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ export default function Dashboard() {
     setSearchLoading(true);
 
     try {
-      const res = await fetch(`http://localhost:3000/api/users?search=${searchInput}`, {
+      const res = await fetch(`/api/users?search=${searchInput}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -76,7 +76,7 @@ export default function Dashboard() {
 
   const createNewChannel = async (user: UserDocument) => {
     try {
-      const res = await fetch(`http://localhost:3000/api/channels/new`, {
+      const res = await fetch(`/api/channels/new`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

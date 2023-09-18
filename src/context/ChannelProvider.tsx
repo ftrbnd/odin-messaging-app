@@ -30,7 +30,7 @@ export const ChannelProvider = (props: PropsWithChildren) => {
 
   async function getLatestChannel(): Promise<ChannelDocument | null> {
     try {
-      const res = await fetch(`http://localhost:3000/api/channels`, {
+      const res = await fetch(`/api/channels`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
