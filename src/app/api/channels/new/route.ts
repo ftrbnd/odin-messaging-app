@@ -7,7 +7,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   const token = await getToken({ req: request });
-  if (!token) return new NextResponse('No active session/token to create a new channel', { status: 404 });
 
   const { newUser }: { newUser: UserDocument } = await request.json();
 
@@ -16,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     // check if dm channel exists already
     const channelExists = await Channel.findOne<ChannelDocument>({
-      users: { $all: [newUser._id, token.id] }
+      users: { $all: [newUser._id, token?.id] }
     }).populate([
       {
         path: 'users',
@@ -31,7 +30,7 @@ export async function POST(request: NextRequest) {
     // otherwise create a new dm channel
     let channel = await Channel.create<ChannelDocument>({
       channelType: 'DM',
-      users: [new mongoose.Types.ObjectId(token.id), newUser._id]
+      users: [new mongoose.Types.ObjectId(token?.id), newUser._id]
     });
 
     channel = await channel.populate([

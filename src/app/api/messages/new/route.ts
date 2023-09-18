@@ -6,7 +6,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   const token = await getToken({ req: request });
-  if (!token) return new NextResponse('No active session/token to create a new Message', { status: 404 });
 
   const { text, channelId }: { text: string; channelId: string } = await request.json();
 
@@ -15,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     const message = new Message({
       text,
-      author: token.id
+      author: token?.id
     });
     await message.save();
 

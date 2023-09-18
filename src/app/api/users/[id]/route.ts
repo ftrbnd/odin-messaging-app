@@ -15,7 +15,6 @@ export async function GET(_request: Request, { params }: { params: { id: string 
 // add or remove friend
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   const token = await getToken({ req: request });
-  if (!token) return new NextResponse('No token found to add friend', { status: 404 });
 
   const { id: friendId } = params;
   const { adding }: { adding: boolean } = await request.json();
@@ -24,13 +23,13 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     await dbConnect();
 
     const friend = await User.findById(friendId);
-    const me = await User.findById(token.id);
+    const me = await User.findById(token?.id);
 
     if (adding) {
-      friend.friends.push(token.id);
+      friend.friends.push(token?.id);
       me.friends.push(friendId);
     } else {
-      friend.friends.pull(token.id);
+      friend.friends.pull(token?.id);
       me.friends.pull(friendId);
     }
 

@@ -6,7 +6,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const token = await getToken({ req: request });
-  if (!token) return new NextResponse('No active session/token to get user channels', { status: 404 });
 
   const friendId = request.nextUrl.searchParams.get('friendId');
 
@@ -16,7 +15,7 @@ export async function GET(request: NextRequest) {
     if (friendId) {
       // find dm channel with friend that was clicked on
       const channel = await Channel.findOne<ChannelDocument[]>({
-        users: { $all: [friendId, token.id] }
+        users: { $all: [friendId, token?.id] }
       })
         .populate([
           {
@@ -32,7 +31,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ channel }, { status: 200 });
     } else {
       // find all channels that session user is in
-      const userObjectId = new mongoose.Types.ObjectId(token.id);
+      const userObjectId = new mongoose.Types.ObjectId(token?.id);
 
       const channels = await Channel.find<ChannelDocument[]>({
         users: userObjectId

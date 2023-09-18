@@ -5,11 +5,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const token = await getToken({ req: request });
-  if (!token) return new NextResponse('No token found to add friend', { status: 404 });
 
   try {
     await dbConnect();
-    const user = await User.findById<UserDocument>(token.id).populate('friends').sort();
+    const user = await User.findById<UserDocument>(token?.id).populate('friends').sort();
 
     const friends = user?.friends?.sort((a, b) => a.username.localeCompare(b.username));
 
