@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const friends = user?.friends?.sort((a, b) => a.username.localeCompare(b.username));
 
-    return NextResponse.json({ friends: user?.friends }, { status: 200 });
+    return NextResponse.json({ friends: friends }, { status: 200 });
   } catch (err) {
     return NextResponse.json({ err }, { status: 400 });
   }
