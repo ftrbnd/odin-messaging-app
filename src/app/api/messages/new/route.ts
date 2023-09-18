@@ -10,20 +10,25 @@ export async function POST(request: NextRequest) {
 
   const { text, channelId }: { text: string; channelId: string } = await request.json();
 
-  await dbConnect();
+  try {
+    await dbConnect();
 
-  const message = new Message({
-    text,
-    author: token.id
-  });
-  await message.save();
+    const message = new Message({
+      text,
+      author: token.id
+    });
+    await message.save();
 
-  let channel = await Channel.findById(channelId).populate(['users', { path: 'messages', populate: { path: 'author' } }]);
+    let channel = await Channel.findById(channelId).populate(['users', { path: 'messages', populate: { path: 'author' } }]);
 
-  channel.messages.push(message);
-  await channel.save();
+    channel.messages.push(message);
+    await channel.save();
 
-  const updatedChannel = await Channel.findById(channelId).populate(['users', { path: 'messages', populate: { path: 'author' } }]);
+    const updatedChannel = await Channel.findById(channelId).populate(['users', { path: 'messages', populate: { path: 'author' } }]);
 
-  return NextResponse.json({ channel: updatedChannel }, { status: 200 });
+    return NextResponse.json({ channel: updatedChannel }, { status: 200 });
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json({ err }, { status: 400 });
+  }
 }

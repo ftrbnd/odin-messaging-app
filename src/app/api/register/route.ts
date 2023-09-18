@@ -11,20 +11,25 @@ export async function POST(req: Request) {
     return new NextResponse('Missing email, username, or password', { status: 400 });
   }
 
-  await dbConnect();
-  const userExists = await User.findOne<UserDocument>({ email: email });
+  try {
+    await dbConnect();
+    const userExists = await User.findOne<UserDocument>({ email: email });
 
-  if (userExists) {
-    return new NextResponse('User already exists', { status: 400 });
+    if (userExists) {
+      return new NextResponse('User already exists', { status: 400 });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new User({
+      email,
+      username,
+      password: hashedPassword
+    });
+    await user.save();
+
+    return NextResponse.json(user, { status: 200 });
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json({ err }, { status: 400 });
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = new User({
-    email,
-    username,
-    password: hashedPassword
-  });
-  await user.save();
-
-  return NextResponse.json(user);
 }
