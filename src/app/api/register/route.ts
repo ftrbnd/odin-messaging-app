@@ -13,9 +13,9 @@ export async function POST(req: Request) {
 
   try {
     await dbConnect();
-    const userExists = await User.findOne<UserDocument>({ email: email });
+    const [emailExists, usernameExists] = await Promise.all([User.findOne<UserDocument>({ email: email }), User.findOne<UserDocument>({ username: username })]);
 
-    if (userExists) {
+    if (emailExists || usernameExists) {
       return new NextResponse('User already exists', { status: 400 });
     }
 
