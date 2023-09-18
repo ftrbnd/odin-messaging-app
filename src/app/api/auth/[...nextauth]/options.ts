@@ -38,7 +38,7 @@ export const options: NextAuthOptions = {
         return {
           ...token,
           id: user.id,
-          name: user.username // TODO: fix typing of user
+          name: user.username
         };
       }
 
