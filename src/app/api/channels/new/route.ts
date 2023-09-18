@@ -1,5 +1,5 @@
 import dbConnect from '@/lib/dbConnect';
-import Channel from '@/models/Channel';
+import Channel, { ChannelDocument } from '@/models/Channel';
 import { UserDocument } from '@/models/User';
 import mongoose from 'mongoose';
 import { getToken } from 'next-auth/jwt';
@@ -11,13 +11,42 @@ export async function POST(request: NextRequest) {
 
   const { newUser }: { newUser: UserDocument } = await request.json();
 
-  await dbConnect();
-  const channel = new Channel({
-    name: 'DM Chat',
-    channelType: 'DM',
-    users: [new mongoose.Types.ObjectId(token.id), newUser._id] // TODO: modify JWT type to have an id field
-  });
-  await channel.save();
+  try {
+    await dbConnect();
 
-  return NextResponse.json({ channel }, { status: 200 });
+    // check if dm channel exists already
+    const channelExists = await Channel.findOne<ChannelDocument>({
+      users: { $all: [newUser._id, token.id] }
+    }).populate([
+      {
+        path: 'users',
+        populate: {
+          path: 'friends'
+        }
+      },
+      { path: 'messages', populate: { path: 'author' } }
+    ]);
+    if (channelExists) return NextResponse.json({ channel: channelExists }, { status: 200 });
+
+    // otherwise create a new dm channel
+    let channel = await Channel.create<ChannelDocument>({
+      channelType: 'DM',
+      users: [new mongoose.Types.ObjectId(token.id), newUser._id]
+    });
+
+    channel = await channel.populate([
+      {
+        path: 'users',
+        populate: {
+          path: 'friends'
+        }
+      },
+      { path: 'messages', populate: { path: 'author' } }
+    ]);
+
+    return NextResponse.json({ channel }, { status: 200 });
+  } catch (err) {
+    console.log(err);
+    return NextResponse.json({ err }, { status: 400 });
+  }
 }

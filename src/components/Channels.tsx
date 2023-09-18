@@ -19,34 +19,34 @@ export default function Dashboard() {
   const session = useSession();
 
   useEffect(() => {
-    const getChannels = async () => {
-      try {
-        const res = await fetch(`http://localhost:3000/api/channels`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!res.ok) {
-          throw new Error('Failed to fetch channels.');
-        }
-
-        const data = res.json();
-        return data;
-      } catch (err: any) {
-        console.error(err.message);
-        setError('Could not fetch channels.');
-        return { channels: [] };
-      }
-    };
-
     if (session.data?.user) {
       getChannels().then((data) => {
         setChannels(data.channels);
       });
     }
   }, [session.data?.user]);
+
+  const getChannels = async () => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/channels`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch channels.');
+      }
+
+      const data = res.json();
+      return data;
+    } catch (err: any) {
+      console.error(err.message);
+      setError('Could not fetch channels.');
+      return { channels: [] };
+    }
+  };
 
   const searchForUsers = async (e: FormEvent) => {
     e.preventDefault();
@@ -75,7 +75,6 @@ export default function Dashboard() {
   };
 
   const createNewChannel = async (user: UserDocument) => {
-    // TODO: Create api route to create new channels
     try {
       const res = await fetch(`http://localhost:3000/api/channels/new`, {
         method: 'POST',
@@ -84,6 +83,14 @@ export default function Dashboard() {
         },
         body: JSON.stringify({ newUser: user })
       });
+
+      if (!res.ok) throw new Error(`Failed to create DM channel with ${user.username}`);
+
+      const { channel: newChannel }: { channel: ChannelDocument } = await res.json();
+      channel.setChannel(newChannel);
+
+      const { channels }: { channels: ChannelDocument[] } = await getChannels();
+      setChannels(channels);
     } catch (err) {
       console.error(err);
       setError('Could not create new channel.');
