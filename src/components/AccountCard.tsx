@@ -9,6 +9,7 @@ export default function AccountCard() {
   const [editing, setEditing] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [newEmail, setNewEmail] = useState('');
+  const [error, setError] = useState('');
 
   const session = useSession();
 
@@ -20,16 +21,23 @@ export default function AccountCard() {
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();
 
-    if (editing && (newUsername !== session.data?.user.name || newEmail !== session.data?.user.email)) {
-      const res = await fetch(`http://localhost:3000/api/users/${session.data?.user.id}/edit`, {
-        method: 'POST',
-        body: JSON.stringify({ newUsername, newEmail })
-      });
+    try {
+      if (editing && (newUsername !== session.data?.user.name || newEmail !== session.data?.user.email)) {
+        const res = await fetch(`http://localhost:3000/api/users/${session.data?.user.id}/edit`, {
+          method: 'POST',
+          body: JSON.stringify({ newUsername, newEmail })
+        });
 
-      const { user }: { user: UserDocument } = await res.json();
-      console.log('UPDATED USER: ', user);
+        if (!res.ok) throw new Error('Failed to edit user.');
+
+        const { user }: { user: UserDocument } = await res.json();
+        console.log('UPDATED USER: ', user);
+      }
+      setEditing((prev) => !prev);
+    } catch (err) {
+      console.error(err);
+      setError('Could not edit user.');
     }
-    setEditing((prev) => !prev);
   };
 
   return (
@@ -73,6 +81,14 @@ export default function AccountCard() {
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="toast toast-end">
+          <div className="alert alert-error">
+            <span>{error}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

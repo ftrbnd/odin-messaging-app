@@ -52,14 +52,18 @@ export default function SignIn() {
       });
     }
 
-    const res = await signIn('credentials', {
-      ...data,
-      redirect: false
-    });
+    try {
+      const res = await signIn('credentials', {
+        ...data,
+        redirect: false
+      });
 
-    if (!res?.ok) {
+      if (!res?.ok) throw new Error('Failed to sign in user.');
+    } catch (err) {
+      console.error(err);
+      setError('Could not sign in user.');
+    } finally {
       setLoading(false);
-      return setError('An error occurred while signing in.');
     }
 
     router.push('/account');

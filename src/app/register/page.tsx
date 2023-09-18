@@ -60,17 +60,21 @@ export default function Register() {
       });
     }
 
-    const res = await fetch('/api/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ data })
-    });
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ data })
+      });
 
-    if (!res.ok) {
+      if (!res.ok) throw new Error('Failed to register user.');
+    } catch (err) {
+      console.error(err);
+      setError('Could not register user.');
+    } finally {
       setLoading(false);
-      return setError('An error occurred while registering.');
     }
 
     router.push('/signin');

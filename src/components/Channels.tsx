@@ -12,6 +12,7 @@ export default function Dashboard() {
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState<UserDocument[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const channel = useChannel();
   const session = useSession();
@@ -34,6 +35,7 @@ export default function Dashboard() {
         return data;
       } catch (err: any) {
         console.error(err.message);
+        setError('Could not fetch channels.');
         return { channels: [] };
       }
     };
@@ -67,6 +69,7 @@ export default function Dashboard() {
       });
     } catch (err) {
       console.error(err);
+      setError('Could not create new channel.');
     } finally {
       closeModal();
     }
@@ -89,6 +92,7 @@ export default function Dashboard() {
       setSearchResults(data.users);
     } catch (err) {
       console.error(err);
+      setError(`Could not search for "${searchInput}"`);
     } finally {
       setSearchLoading(false);
     }
@@ -164,6 +168,14 @@ export default function Dashboard() {
           </li>
         ))}
       </ul>
+
+      {error && (
+        <div className="toast toast-end">
+          <div className="alert alert-error">
+            <span>{error}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

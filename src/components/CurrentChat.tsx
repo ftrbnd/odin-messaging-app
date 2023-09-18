@@ -9,6 +9,9 @@ import { FormEvent, useState } from 'react';
 
 export default function CurrentChat() {
   const [textInput, setTextInput] = useState('');
+  const [sendLoading, setSendLoading] = useState(false);
+  const [friendLoading, setFriendLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const channel = useChannel();
   const session = useSession();
@@ -18,17 +21,24 @@ export default function CurrentChat() {
     if (!textInput || !textInput.trim()) return setTextInput('');
 
     try {
+      setSendLoading(true);
+
       const res = await fetch('http://localhost:3000/api/messages/new', {
         method: 'POST',
         body: JSON.stringify({ text: textInput, channelId: channel.channel?._id })
       });
+
+      if (!res.ok) throw new Error('Failed to send message.');
 
       const { channel: channelCreated }: { channel: ChannelDocument } = await res.json();
 
       channel.setChannel(channelCreated);
       setTextInput('');
     } catch (err) {
-      console.error('Fail sending message: ', err);
+      console.error(err);
+      setError('Could not send message.');
+    } finally {
+      setSendLoading(false);
     }
   };
 
@@ -36,17 +46,21 @@ export default function CurrentChat() {
     console.log('FRIEND?: ', user);
 
     try {
+      setFriendLoading(true);
+
       const res = await fetch(`http://localhost:3000/api/users/${user._id}`, {
         method: 'POST',
         body: JSON.stringify({ adding: !user.friends?.find((f) => f._id === session.data?.user.id) })
       });
 
-      const data = await res.json();
-      console.log(data);
+      if (!res.ok) throw new Error('Failed to edit friend.');
 
       channel.refetch();
     } catch (err) {
       console.error(err);
+      setError('Could not edit friend.');
+    } finally {
+      setFriendLoading(false);
     }
   };
 
@@ -63,7 +77,7 @@ export default function CurrentChat() {
                 </kbd>
                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                   <li onClick={() => manageFriend(user)}>
-                    <a>{user.friends?.find((f) => f._id === session.data.user.id) ? 'Remove Friend' : 'Add Friend'}</a>
+                    {friendLoading ? <span className="loading loading-spinner loading-md"></span> : <a>{user.friends?.find((f) => f._id === session.data.user.id) ? 'Remove Friend' : 'Add Friend'}</a>}
                   </li>
                 </ul>
               </div>
@@ -95,10 +109,18 @@ export default function CurrentChat() {
       {channel.channel && (
         <form onSubmit={(e) => sendMessage(e)} className="w-full flex justify-between items-stretch gap-2 p-2">
           <input type="text" placeholder="Type here" className="input input-bordered input-primary w-full max-w" value={textInput} onChange={(e) => setTextInput(e.target.value)} />
-          <button onClick={sendMessage} className="btn btn-primary">
-            Send
+          <button onClick={sendMessage} className={`btn btn-primary ${(sendLoading || !textInput || !textInput.trim()) && 'btn-disabled'}`}>
+            {sendLoading ? <span className="loading loading-dots loading-md"></span> : 'Send'}
           </button>
         </form>
+      )}
+
+      {error && (
+        <div className="toast toast-end">
+          <div className="alert alert-error">
+            <span>{error}</span>
+          </div>
+        </div>
       )}
     </div>
   );
