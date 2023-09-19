@@ -6,6 +6,7 @@ import { NextSessionProvider } from '@/context/NextSessionProvider';
 import { ChannelProvider } from '@/context/ChannelProvider';
 import Footer from '@/components/Footer';
 import { FriendsProvider } from '@/context/FriendsProvider';
+import { Analytics } from '@vercel/analytics/react';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Navbar />
               {children}
               <Footer />
+              <Analytics />
             </body>
           </FriendsProvider>
         </ChannelProvider>
