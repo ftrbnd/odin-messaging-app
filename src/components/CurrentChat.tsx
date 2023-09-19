@@ -4,15 +4,24 @@ import useChannel from '@/context/ChannelProvider';
 import useFriends from '@/context/FriendsProvider';
 import { ChannelDocument } from '@/models/Channel';
 import { UserDocument } from '@/models/User';
+import { FileWithPath } from '@uploadthing/react';
+import { useDropzone } from '@uploadthing/react/hooks';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useState } from 'react';
+import { UploadFileResponse, generateClientDropzoneAccept } from 'uploadthing/client';
 
-const imageMimeType = /image\/(png|jpg|jpeg)/i;
+import { generateReactHelpers } from '@uploadthing/react/hooks';
+import { OurFileRouter } from '@/app/api/uploadthing/core';
+
+const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
 export default function CurrentChat() {
   const [textInput, setTextInput] = useState('');
-  const [fileDataURL, setFileDataURL] = useState('');
+  const [files, setFiles] = useState<File[]>([]);
+  const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
+    setFiles(acceptedFiles);
+  }, []);
 
   const [sendLoading, setSendLoading] = useState(false);
   const [friendLoading, setFriendLoading] = useState(false);
@@ -21,6 +30,27 @@ export default function CurrentChat() {
   const channel = useChannel();
   const friends = useFriends();
   const session = useSession();
+
+  const { startUpload, permittedFileInfo } = useUploadThing('messageAttachment', {
+    onClientUploadComplete: (res) => {
+      sendMessage(res);
+    },
+    onUploadError: (e) => {
+      setError(e.message);
+      setSendLoading(false);
+      setFiles([]);
+    },
+    onUploadBegin: () => {
+      setSendLoading(true);
+    }
+  });
+
+  const fileTypes = permittedFileInfo?.config ? Object.keys(permittedFileInfo?.config) : [];
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined
+  });
 
   const manageFriend = async (user: UserDocument) => {
     try {
@@ -43,20 +73,34 @@ export default function CurrentChat() {
     }
   };
 
-  const sendMessage = async (e: FormEvent) => {
+  const validateMessage = async (e: FormEvent) => {
     e.preventDefault();
-    if ((!textInput || !textInput.trim()) && !fileDataURL) return setTextInput('');
+
+    if (files.length > 0) {
+      await startUpload(files);
+    } else {
+      await sendMessage();
+    }
+  };
+
+  const sendMessage = async (files?: UploadFileResponse[]) => {
+    if ((!textInput || !textInput.trim()) && !files) return setTextInput('');
 
     try {
       setSendLoading(true);
 
-      if (fileDataURL) {
-        console.log('Message contains an image');
+      const imageLinks: string[] = [];
+      if (files) {
+        files.forEach((file) => imageLinks.push(file.url));
       }
 
       const res = await fetch('/api/messages/new', {
         method: 'POST',
-        body: JSON.stringify({ text: textInput, channelId: channel.channel?._id })
+        body: JSON.stringify({
+          text: textInput,
+          media: imageLinks,
+          channelId: channel.channel?._id
+        })
       });
 
       if (!res.ok) throw new Error('Failed to send message.');
@@ -65,31 +109,12 @@ export default function CurrentChat() {
 
       channel.setChannel(channelCreated);
       setTextInput('');
-      setFileDataURL('');
+      if (files) setFiles([]);
     } catch (err) {
       console.error(err);
       setError('Could not send message.');
     } finally {
       setSendLoading(false);
-    }
-  };
-
-  const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.length) {
-      const file = e.target.files[0];
-
-      if (!file.type.match(imageMimeType)) {
-        return alert('Image mime type is not valid');
-      } else if (file.size > 5 * 1024 * 1000) {
-        return alert('Image cannot be over 5MB');
-      }
-
-      const fileReader = new FileReader();
-
-      fileReader.onload = () => {
-        setFileDataURL(fileReader.result as string);
-      };
-      fileReader.readAsDataURL(file);
     }
   };
 
@@ -122,7 +147,12 @@ export default function CurrentChat() {
                 <Image src={message.author.image || '/default.png'} alt={`Avatar of ${message.author.username}`} height={100} width={100} priority />
               </div>
             </div>
-            <div className="chat-bubble">{message.text}</div>
+            <div className="chat-bubble">
+              {message.text}
+              {message.media?.map((media) => (
+                <Image key={media} src={media} alt="Message attachment" width={100} height={100} className="rounded-xl" />
+              ))}
+            </div>
             <div className="chat-footer opacity-50">
               <time className="text-xs opacity-50">
                 {new Date(`${message.createdAt}`).toLocaleTimeString([], {
@@ -135,29 +165,22 @@ export default function CurrentChat() {
         ))}
       </div>
 
+      {files && files.map((file) => <p key={file.name}>{file.name}</p>)}
+
       {channel.channel && (
         <div className="w-full flex justify-between gap-2 p-2">
-          <form className="dropdown dropdown-top">
-            <label tabIndex={0} className="btn btn-outline btn-accent">
-              {fileDataURL ? <Image src={fileDataURL} alt={'Chat image'} width={25} height={25} /> : '+'}
-            </label>
-            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-              <li className="flex gap-2 justify-between">
-                <input type="file" onChange={(e) => handleFileInput(e)} className="file-input file-input-bordered file-input-accent h-full" accept="image/png, image/jpeg, image/jpg" />
-                {fileDataURL && (
-                  <button className="btn btn-square btn-outline" onClick={() => setFileDataURL('')}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
-              </li>
-            </ul>
-          </form>
+          {files.length > 0 && (
+            <button onClick={() => setFiles([])} className="btn btn-outline btn-error">
+              x
+            </button>
+          )}
+          <div {...getRootProps()} className="btn btn-outline btn-accent">
+            <input {...getInputProps()} />+
+          </div>
 
-          <form onSubmit={(e) => sendMessage(e)} className="flex flex-1 gap-2 justify-between items-stretch">
+          <form onSubmit={(e) => validateMessage(e)} className="flex flex-1 gap-2 justify-between items-stretch">
             <input type="text" placeholder="Type here" className="input input-bordered input-primary w-full max-w" value={textInput} onChange={(e) => setTextInput(e.target.value)} />
-            <button onClick={sendMessage} className={`btn btn-primary ${(sendLoading || !textInput || !textInput.trim()) && !fileDataURL && 'btn-disabled'}`}>
+            <button onClick={validateMessage} className={`btn btn-primary ${(sendLoading || !textInput || !textInput.trim()) && (files.length === 0 || sendLoading) && 'btn-disabled'}`}>
               {sendLoading ? <span className="loading loading-dots loading-md"></span> : 'Send'}
             </button>
           </form>
