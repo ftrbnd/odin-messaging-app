@@ -6,10 +6,14 @@ import { ChannelDocument } from '@/models/Channel';
 import { UserDocument } from '@/models/User';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+
+const imageMimeType = /image\/(png|jpg|jpeg)/i;
 
 export default function CurrentChat() {
   const [textInput, setTextInput] = useState('');
+  const [fileDataURL, setFileDataURL] = useState('');
+
   const [sendLoading, setSendLoading] = useState(false);
   const [friendLoading, setFriendLoading] = useState(false);
   const [error, setError] = useState('');
@@ -41,10 +45,14 @@ export default function CurrentChat() {
 
   const sendMessage = async (e: FormEvent) => {
     e.preventDefault();
-    if (!textInput || !textInput.trim()) return setTextInput('');
+    if ((!textInput || !textInput.trim()) && !fileDataURL) return setTextInput('');
 
     try {
       setSendLoading(true);
+
+      if (fileDataURL) {
+        console.log('Message contains an image');
+      }
 
       const res = await fetch('/api/messages/new', {
         method: 'POST',
@@ -57,6 +65,7 @@ export default function CurrentChat() {
 
       channel.setChannel(channelCreated);
       setTextInput('');
+      setFileDataURL('');
     } catch (err) {
       console.error(err);
       setError('Could not send message.');
@@ -65,9 +74,23 @@ export default function CurrentChat() {
     }
   };
 
-  const sendImage = async (e: FormEvent) => {
-    e.preventDefault();
-    console.log('sendImage(): ', e);
+  const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.length) {
+      const file = e.target.files[0];
+
+      if (!file.type.match(imageMimeType)) {
+        return alert('Image mime type is not valid');
+      } else if (file.size > 5 * 1024 * 1000) {
+        return alert('Image cannot be over 5MB');
+      }
+
+      const fileReader = new FileReader();
+
+      fileReader.onload = () => {
+        setFileDataURL(fileReader.result as string);
+      };
+      fileReader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -114,20 +137,27 @@ export default function CurrentChat() {
 
       {channel.channel && (
         <div className="w-full flex justify-between gap-2 p-2">
-          <form onSubmit={(e) => sendImage(e)} className="dropdown dropdown-top">
+          <form className="dropdown dropdown-top">
             <label tabIndex={0} className="btn btn-outline btn-accent">
-              +
+              {fileDataURL ? <Image src={fileDataURL} alt={'Chat image'} width={25} height={25} /> : '+'}
             </label>
             <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-              <li>
-                <input type="file" className="file-input file-input-bordered file-input-accent h-full" accept=".png,.jpeg,.jpg" />
+              <li className="flex gap-2 justify-between">
+                <input type="file" onChange={(e) => handleFileInput(e)} className="file-input file-input-bordered file-input-accent h-full" accept="image/png, image/jpeg, image/jpg" />
+                {fileDataURL && (
+                  <button className="btn btn-square btn-outline" onClick={() => setFileDataURL('')}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
               </li>
             </ul>
           </form>
 
           <form onSubmit={(e) => sendMessage(e)} className="flex flex-1 gap-2 justify-between items-stretch">
             <input type="text" placeholder="Type here" className="input input-bordered input-primary w-full max-w" value={textInput} onChange={(e) => setTextInput(e.target.value)} />
-            <button onClick={sendMessage} className={`btn btn-primary ${(sendLoading || !textInput || !textInput.trim()) && 'btn-disabled'}`}>
+            <button onClick={sendMessage} className={`btn btn-primary ${(sendLoading || !textInput || !textInput.trim()) && !fileDataURL && 'btn-disabled'}`}>
               {sendLoading ? <span className="loading loading-dots loading-md"></span> : 'Send'}
             </button>
           </form>
