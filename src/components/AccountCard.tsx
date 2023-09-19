@@ -26,6 +26,10 @@ export default function AccountCard() {
       if (editing && (newUsername !== session?.user.name || newEmail !== session?.user.email)) {
         setEditLoading(true);
 
+        if (session?.user.id === process.env.NEXT_PUBLIC_TEST_USER_ID) {
+          throw new Error('Cannot edit sample user!');
+        }
+
         const res = await fetch(`/api/users/${session?.user.id}/edit`, {
           method: 'POST',
           body: JSON.stringify({
@@ -46,9 +50,9 @@ export default function AccountCard() {
         });
       }
       setEditing((prev) => !prev);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError('Could not edit user.');
+      setError(err.message);
       if (session?.user.name) setNewUsername(session?.user.name);
       if (session?.user.email) setNewEmail(session?.user.email);
     } finally {

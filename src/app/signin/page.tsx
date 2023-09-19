@@ -35,6 +35,30 @@ export default function SignIn() {
     if (session.data?.user) router.push('/');
   });
 
+  const sampleSignIn = async () => {
+    try {
+      setLoading(true);
+
+      const res = await signIn('credentials', {
+        email: process.env.NEXT_PUBLIC_TEST_USER_EMAIL,
+        password: process.env.NEXT_PUBLIC_TEST_USER_PASSWORD,
+        redirect: false
+      });
+
+      if (res?.error) throw new Error('Failed to sign in sample user.');
+
+      channel.refetch();
+      friends.refetch();
+      router.push('/');
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      setError('Could not sign in sample user.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const signInCredentials = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -128,6 +152,10 @@ export default function SignIn() {
       <Link className="self-center" href={'/register'}>
         <button className={'btn btn-outline btn-secondary'}>Register</button>
       </Link>
+
+      <button onClick={sampleSignIn} className={'btn btn-link'}>
+        Sample Account
+      </button>
 
       {error && (
         <div className="toast toast-top toast-end">
