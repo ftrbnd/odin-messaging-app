@@ -18,6 +18,27 @@ export default function CurrentChat() {
   const friends = useFriends();
   const session = useSession();
 
+  const manageFriend = async (user: UserDocument) => {
+    try {
+      setFriendLoading(true);
+
+      const res = await fetch(`/api/users/${user._id}`, {
+        method: 'POST',
+        body: JSON.stringify({ adding: !user.friends?.find((f) => f._id === session.data?.user.id) })
+      });
+
+      if (!res.ok) throw new Error('Failed to edit friend.');
+
+      friends.refetch();
+      channel.refetch();
+    } catch (err) {
+      console.error(err);
+      setError('Could not edit friend.');
+    } finally {
+      setFriendLoading(false);
+    }
+  };
+
   const sendMessage = async (e: FormEvent) => {
     e.preventDefault();
     if (!textInput || !textInput.trim()) return setTextInput('');
@@ -44,25 +65,9 @@ export default function CurrentChat() {
     }
   };
 
-  const manageFriend = async (user: UserDocument) => {
-    try {
-      setFriendLoading(true);
-
-      const res = await fetch(`/api/users/${user._id}`, {
-        method: 'POST',
-        body: JSON.stringify({ adding: !user.friends?.find((f) => f._id === session.data?.user.id) })
-      });
-
-      if (!res.ok) throw new Error('Failed to edit friend.');
-
-      friends.refetch();
-      channel.refetch();
-    } catch (err) {
-      console.error(err);
-      setError('Could not edit friend.');
-    } finally {
-      setFriendLoading(false);
-    }
+  const sendImage = async (e: FormEvent) => {
+    e.preventDefault();
+    console.log('sendImage(): ', e);
   };
 
   return (
@@ -108,12 +113,25 @@ export default function CurrentChat() {
       </div>
 
       {channel.channel && (
-        <form onSubmit={(e) => sendMessage(e)} className="w-full flex justify-between items-stretch gap-2 p-2">
-          <input type="text" placeholder="Type here" className="input input-bordered input-primary w-full max-w" value={textInput} onChange={(e) => setTextInput(e.target.value)} />
-          <button onClick={sendMessage} className={`btn btn-primary ${(sendLoading || !textInput || !textInput.trim()) && 'btn-disabled'}`}>
-            {sendLoading ? <span className="loading loading-dots loading-md"></span> : 'Send'}
-          </button>
-        </form>
+        <div className="w-full flex justify-between gap-2 p-2">
+          <form onSubmit={(e) => sendImage(e)} className="dropdown dropdown-top">
+            <label tabIndex={0} className="btn btn-outline btn-accent">
+              +
+            </label>
+            <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+              <li>
+                <input type="file" className="file-input file-input-bordered file-input-accent h-full" accept=".png,.jpeg,.jpg" />
+              </li>
+            </ul>
+          </form>
+
+          <form onSubmit={(e) => sendMessage(e)} className="flex flex-1 gap-2 justify-between items-stretch">
+            <input type="text" placeholder="Type here" className="input input-bordered input-primary w-full max-w" value={textInput} onChange={(e) => setTextInput(e.target.value)} />
+            <button onClick={sendMessage} className={`btn btn-primary ${(sendLoading || !textInput || !textInput.trim()) && 'btn-disabled'}`}>
+              {sendLoading ? <span className="loading loading-dots loading-md"></span> : 'Send'}
+            </button>
+          </form>
+        </div>
       )}
 
       {error && (
