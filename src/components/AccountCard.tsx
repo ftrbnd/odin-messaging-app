@@ -8,6 +8,8 @@ export default function AccountCard() {
   const [editing, setEditing] = useState(false);
   const [newUsername, setNewUsername] = useState('');
   const [newEmail, setNewEmail] = useState('');
+
+  const [editLoading, setEditLoading] = useState(false);
   const [error, setError] = useState('');
 
   const { data: session, update } = useSession();
@@ -22,6 +24,8 @@ export default function AccountCard() {
 
     try {
       if (editing && (newUsername !== session?.user.name || newEmail !== session?.user.email)) {
+        setEditLoading(true);
+
         const res = await fetch(`/api/users/${session?.user.id}/edit`, {
           method: 'POST',
           body: JSON.stringify({
@@ -47,6 +51,8 @@ export default function AccountCard() {
       setError('Could not edit user.');
       if (session?.user.name) setNewUsername(session?.user.name);
       if (session?.user.email) setNewEmail(session?.user.email);
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -86,8 +92,8 @@ export default function AccountCard() {
               Cancel
             </button>
           )}
-          <button onClick={(e) => handleClick(e)} className="btn btn-primary">
-            {editing ? 'Save' : 'Edit'}
+          <button onClick={(e) => handleClick(e)} className={`btn btn-primary ${editLoading && 'btn-disabled'}`}>
+            {editing ? (editLoading ? 'Saving...' : 'Save') : 'Edit'}
           </button>
         </div>
       </div>
