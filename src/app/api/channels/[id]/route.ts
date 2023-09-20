@@ -32,6 +32,21 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         users: channel.users?.concat(addedUserId)
       });
 
+      const channelExists = await Channel.findOne<ChannelDocument>({
+        users: { $all: newChannel.users, $size: newChannel.users.length }
+      }).populate([
+        {
+          path: 'users',
+          populate: {
+            path: 'friends'
+          }
+        },
+        { path: 'messages', populate: { path: 'author' } }
+      ]);
+      if (channelExists) {
+        return NextResponse.json({ channel: channelExists }, { status: 200 });
+      }
+
       await newChannel.save();
 
       channel = await newChannel.populate([
@@ -48,6 +63,22 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     } else {
       // add the user to the current GROUP channel
       channel?.users?.push(addedUserId);
+
+      const channelExists = await Channel.findOne<ChannelDocument>({
+        users: { $all: channel.users, $size: channel.users.length }
+      }).populate([
+        {
+          path: 'users',
+          populate: {
+            path: 'friends'
+          }
+        },
+        { path: 'messages', populate: { path: 'author' } }
+      ]);
+      if (channelExists) {
+        return NextResponse.json({ channel: channelExists }, { status: 200 });
+      }
+
       await channel.save();
 
       channel = await channel.populate([
