@@ -126,10 +126,10 @@ export default function Dashboard() {
       for (let i = 0; i < channel.users.length; i++) {
         if (channel.users[i]._id !== session.data.user.id) {
           users.push(channel.users[i].username);
+          if (i < channel.users.length - 1) users.push(', ');
         }
-        if (users.length > 2) break;
       }
-      return users.join(', ').concat('...');
+      return users.join('');
     }
   };
 
