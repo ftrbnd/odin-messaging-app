@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { FormEvent, useCallback, useState } from 'react';
 import { UploadFileResponse, generateClientDropzoneAccept } from 'uploadthing/client';
+import { v4 as uuidv4 } from 'uuid';
 
 import { generateReactHelpers } from '@uploadthing/react/hooks';
 import { OurFileRouter } from '@/app/api/uploadthing/core';
@@ -156,7 +157,7 @@ export default function CurrentChat() {
             (user) =>
               session.data?.user &&
               session.data.user.id !== user._id && (
-                <div key={user._id} className="dropdown dropdown-hover">
+                <div key={`${user._id} ${uuidv4()}`} className="dropdown dropdown-hover">
                   <a tabIndex={0} className="btn btn-ghost normal-case text-xl hover:cursor-pointer hover:bg-primary">
                     <div className={`avatar ${!user.image && 'placeholder'}`}>
                       <div className={`w-8 rounded-full ${!user.image && 'bg-neutral-focus text-neutral-content'}`}>
@@ -191,7 +192,7 @@ export default function CurrentChat() {
             {friends.friends?.map(
               (friend) =>
                 !channel.channel?.users?.find((user) => user._id === friend._id) && (
-                  <li key={friend._id} onClick={() => createGroupChat(friend)}>
+                  <li key={`${friend._id} ${uuidv4()}`} onClick={() => createGroupChat(friend)}>
                     <a>{friend.username}</a>
                   </li>
                 )
