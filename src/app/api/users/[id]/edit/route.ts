@@ -6,7 +6,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   const { id } = params;
   if (!id) return new NextResponse('No id found to edit User profile', { status: 404 });
 
-  const { newUsername, newEmail }: { newUsername: string; newEmail: string } = await request.json();
+  const { newUsername, newEmail, newImage }: { newUsername: string; newEmail: string; newImage: string } = await request.json();
 
   try {
     await dbConnect();
@@ -19,23 +19,14 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       return new NextResponse('Username already exists', { status: 400 });
     }
 
-    let user;
-    if (!newUsername) {
-      user = await User.findByIdAndUpdate(id, {
-        email: newEmail
-      });
-    } else if (!newEmail) {
-      user = await User.findByIdAndUpdate(id, {
-        username: newUsername
-      });
-    } else {
-      user = await User.findByIdAndUpdate(id, {
-        email: newEmail,
-        username: newUsername
-      });
-    }
-
+    const user = await User.findById(id);
     if (!user) return new NextResponse(`No user found with id ${id} to edit User profile`, { status: 404 });
+
+    if (newEmail) user.email = newEmail;
+    if (newUsername) user.username = newUsername;
+    if (newImage) user.image = newImage;
+
+    await user.save();
 
     return NextResponse.json({ message: 'Updated account' }, { status: 200 });
   } catch (err) {

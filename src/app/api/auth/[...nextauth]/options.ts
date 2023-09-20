@@ -38,7 +38,8 @@ export const options: NextAuthOptions = {
         return {
           ...token,
           name: session.user.name,
-          email: session.user.email
+          email: session.user.email,
+          picture: session.user.image
         };
       }
 
@@ -47,7 +48,8 @@ export const options: NextAuthOptions = {
           ...token,
           id: user.id,
           name: user.username,
-          email: user.email
+          email: user.email,
+          picture: user.image
         };
       }
 
@@ -60,7 +62,8 @@ export const options: NextAuthOptions = {
           ...session.user,
           id: token.id,
           name: token.name,
-          email: token.email
+          email: token.email,
+          image: token.picture
         }
       };
     }
