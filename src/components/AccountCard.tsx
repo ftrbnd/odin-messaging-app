@@ -52,14 +52,19 @@ export default function AccountCard() {
   const validateEdit = async (e: MouseEvent) => {
     e.preventDefault();
 
-    if (session?.user.id === process.env.NEXT_PUBLIC_TEST_USER_ID) {
-      throw new Error('Cannot edit sample user!');
-    }
+    try {
+      if (session?.user.id === process.env.NEXT_PUBLIC_TEST_USER_ID) {
+        throw new Error('Cannot edit sample user!');
+      }
 
-    if (files.length > 0) {
-      await startUpload(files);
-    } else {
-      await editAccount();
+      if (files.length > 0) {
+        await startUpload(files);
+      } else {
+        await editAccount();
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message);
     }
   };
 
