@@ -118,17 +118,22 @@ export default function CurrentChat() {
     }
   };
 
+  const createGroupChat = (addedFriend: UserDocument) => {
+    console.log(`Creating group chat with ${addedFriend.username}...`);
+    // create new channel with this channel's current users and the addedFriend
+  };
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-between">
-      <div className="flex justify-center w-full">
+      <div className="navbar bg-neutral gap-2 justify-between">
         {channel.channel?.users?.map(
           (user) =>
             session.data?.user &&
             session.data.user.id !== user._id && (
               <div key={user._id} className="dropdown dropdown-hover">
-                <kbd tabIndex={0} className="kbd hover:cursor-pointer hover:bg-primary">
+                <a tabIndex={0} className="btn btn-ghost normal-case text-xl hover:cursor-pointer hover:bg-primary">
                   {user.username}
-                </kbd>
+                </a>
                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                   <li onClick={() => manageFriend(user)}>
                     {friendLoading ? <span className="loading loading-spinner loading-md"></span> : <a>{user.friends?.find((f) => f._id === session.data.user.id) ? 'Remove Friend' : 'Add Friend'}</a>}
@@ -137,6 +142,22 @@ export default function CurrentChat() {
               </div>
             )
         )}
+
+        <div className="dropdown dropdown-hover dropdown-left">
+          <a tabIndex={0} className="btn btn-secondary normal-case text-xl hover:cursor-pointer hover:bg-primary">
+            +
+          </a>
+          <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+            {friends.friends?.map(
+              (friend) =>
+                !channel.channel?.users?.find((user) => user._id === friend._id) && (
+                  <li key={friend._id} onClick={() => createGroupChat(friend)}>
+                    <a>{friend.username}</a>
+                  </li>
+                )
+            )}
+          </ul>
+        </div>
       </div>
 
       <div className="h-full w-full flex flex-col px-2">
