@@ -150,7 +150,7 @@ export default function CurrentChat() {
             <div className="chat-bubble">
               {message.text}
               {message.media?.map((media) => (
-                <Image key={media} src={media} alt="Message attachment" width={100} height={100} className="rounded-xl" />
+                <Image key={media} src={media} alt="Message attachment" width={100} height={100} className="rounded-xl mask h-full w-full" />
               ))}
             </div>
             <div className="chat-footer opacity-50">
