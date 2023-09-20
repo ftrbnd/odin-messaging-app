@@ -104,8 +104,8 @@ export default function Friends() {
                 <a className="flex flex-row justify-start items-center gap-4">
                   {friend.image ? (
                     <div className="avatar">
-                      <div className="w-24 rounded-full">
-                        <Image src={friend.image} alt={`Avatar of ${friend.username}`} height={24} width={24} priority />
+                      <div className="w-12 rounded-full">
+                        <Image src={friend.image} alt={`Avatar of ${friend.username}`} height={100} width={100} priority />
                       </div>
                     </div>
                   ) : (
