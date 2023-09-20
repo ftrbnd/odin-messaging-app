@@ -141,7 +141,7 @@ export default function CurrentChat() {
 
       router.refresh();
     } catch (err: any) {
-      console.log(err);
+      console.error(err);
       setError(err.message);
     } finally {
       console.log('finally');
@@ -167,7 +167,7 @@ export default function CurrentChat() {
                         )}
                       </div>
                     </div>
-                    {user.username}
+                    <p className="text-xs">{user.username}</p>
                   </a>
                   <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                     <li onClick={() => manageFriend(user)}>
@@ -200,7 +200,7 @@ export default function CurrentChat() {
         </div>
       </div>
 
-      <div className="h-full w-full flex flex-col px-2">
+      <div className="h-full w-full flex flex-col px-2 mt-2">
         {channel.channel?.messages?.map((message) => (
           <div key={message._id} className={`chat ${message.author._id === session.data?.user.id ? 'chat-end' : 'chat-start'}`}>
             <div className={`chat-image avatar ${!message.author.image && 'placeholder'}`}>
