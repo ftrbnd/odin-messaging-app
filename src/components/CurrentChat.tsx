@@ -132,6 +132,11 @@ export default function CurrentChat() {
             session.data.user.id !== user._id && (
               <div key={user._id} className="dropdown dropdown-hover">
                 <a tabIndex={0} className="btn btn-ghost normal-case text-xl hover:cursor-pointer hover:bg-primary">
+                  <div className={`avatar ${!user.image && 'placeholder'}`}>
+                    <div className={`w-8 rounded-full ${!user.image && 'bg-neutral-focus text-neutral-content'}`}>
+                      {user.image ? <Image src={user.image} alt={`Avatar of ${user.username}`} height={100} width={100} priority /> : <span className="text-xs">{user.username[0].toUpperCase()}</span>}
+                    </div>
+                  </div>
                   {user.username}
                 </a>
                 <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
