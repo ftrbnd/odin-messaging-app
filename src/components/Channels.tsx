@@ -66,9 +66,9 @@ export default function Dashboard() {
       const { users }: { users: UserDocument[] } = await res.json();
 
       setSearchResults(users);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError(`Could not search for "${searchInput}"`);
+      setError(err.message);
     } finally {
       setSearchLoading(false);
     }
@@ -91,9 +91,9 @@ export default function Dashboard() {
 
       const { channels }: { channels: ChannelDocument[] } = await getChannels();
       setChannels(channels);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError('Could not create new channel.');
+      setError(err.message);
     } finally {
       closeModal();
     }

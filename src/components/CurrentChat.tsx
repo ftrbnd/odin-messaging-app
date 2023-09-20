@@ -67,9 +67,9 @@ export default function CurrentChat() {
 
       friends.refetch();
       channel.refetch();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError('Could not edit friend.');
+      setError(err.message);
     } finally {
       setFriendLoading(false);
     }
@@ -112,9 +112,9 @@ export default function CurrentChat() {
       channel.setChannel(channelCreated);
       setTextInput('');
       if (files) setFiles([]);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError('Could not send message.');
+      setError(err.message);
     } finally {
       setSendLoading(false);
     }

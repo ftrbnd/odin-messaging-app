@@ -87,9 +87,9 @@ export default function Register() {
       friends.refetch();
       router.push('/');
       router.refresh();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError('Could not register user.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }

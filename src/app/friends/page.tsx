@@ -85,9 +85,9 @@ export default function Friends() {
       const { users }: { users: UserDocument[] } = await res.json();
 
       setSearchResults(users);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError(`Could not search for "${searchInput}"`);
+      setError(err.message);
     } finally {
       setSearchLoading(false);
     }

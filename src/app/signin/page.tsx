@@ -86,15 +86,15 @@ export default function SignIn() {
         redirect: false
       });
 
-      if (res?.error) throw new Error('Failed to sign in user.');
+      if (res?.error) throw new Error('Invalid credentials.');
 
       channel.refetch();
       friends.refetch();
       router.push('/');
       router.refresh();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      setError('Could not sign in user.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }
