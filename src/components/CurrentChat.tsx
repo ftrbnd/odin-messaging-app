@@ -13,6 +13,7 @@ import { UploadFileResponse, generateClientDropzoneAccept } from 'uploadthing/cl
 
 import { generateReactHelpers } from '@uploadthing/react/hooks';
 import { OurFileRouter } from '@/app/api/uploadthing/core';
+import { useRouter } from 'next/navigation';
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
@@ -30,6 +31,7 @@ export default function CurrentChat() {
   const channel = useChannel();
   const friends = useFriends();
   const session = useSession();
+  const router = useRouter();
 
   const { startUpload, permittedFileInfo } = useUploadThing('messageAttachment', {
     onClientUploadComplete: (res) => {
@@ -118,35 +120,68 @@ export default function CurrentChat() {
     }
   };
 
-  const createGroupChat = (addedFriend: UserDocument) => {
-    console.log(`Creating group chat with ${addedFriend.username}...`);
-    // create new channel with this channel's current users and the addedFriend
+  const createGroupChat = async (addedUser: UserDocument) => {
+    console.log(`Creating group chat with ${addedUser.username}...`);
+
+    try {
+      const res = await fetch(`/api/channels/${channel.channel?._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ addedUserId: addedUser._id })
+      });
+
+      if (!res.ok) throw new Error('Failed to create group chat.');
+
+      const { channel: newChannel }: { channel: ChannelDocument } = await res.json();
+      channel.setChannel(newChannel);
+
+      console.log('GROUP CHANNEL: ', newChannel);
+
+      router.refresh();
+    } catch (err: any) {
+      console.log(err);
+      setError(err.message);
+    } finally {
+      console.log('finally');
+    }
   };
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-between">
       <div className="navbar bg-neutral gap-2 justify-between">
-        {channel.channel?.users?.map(
-          (user) =>
-            session.data?.user &&
-            session.data.user.id !== user._id && (
-              <div key={user._id} className="dropdown dropdown-hover">
-                <a tabIndex={0} className="btn btn-ghost normal-case text-xl hover:cursor-pointer hover:bg-primary">
-                  <div className={`avatar ${!user.image && 'placeholder'}`}>
-                    <div className={`w-8 rounded-full ${!user.image && 'bg-neutral-focus text-neutral-content'}`}>
-                      {user.image ? <Image src={user.image} alt={`Avatar of ${user.username}`} height={100} width={100} priority /> : <span className="text-xs">{user.username[0].toUpperCase()}</span>}
+        <div className="flex justify-start gap-2">
+          {channel.channel?.users?.map(
+            (user) =>
+              session.data?.user &&
+              session.data.user.id !== user._id && (
+                <div key={user._id} className="dropdown dropdown-hover">
+                  <a tabIndex={0} className="btn btn-ghost normal-case text-xl hover:cursor-pointer hover:bg-primary">
+                    <div className={`avatar ${!user.image && 'placeholder'}`}>
+                      <div className={`w-8 rounded-full ${!user.image && 'bg-neutral-focus text-neutral-content'}`}>
+                        {user.image ? (
+                          <Image src={user.image} alt={`Avatar of ${user.username}`} height={100} width={100} priority />
+                        ) : (
+                          <span className="text-xs">{user.username[0].toUpperCase()}</span>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  {user.username}
-                </a>
-                <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                  <li onClick={() => manageFriend(user)}>
-                    {friendLoading ? <span className="loading loading-spinner loading-md"></span> : <a>{user.friends?.find((f) => f._id === session.data.user.id) ? 'Remove Friend' : 'Add Friend'}</a>}
-                  </li>
-                </ul>
-              </div>
-            )
-        )}
+                    {user.username}
+                  </a>
+                  <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                    <li onClick={() => manageFriend(user)}>
+                      {friendLoading ? (
+                        <span className="loading loading-spinner loading-md"></span>
+                      ) : (
+                        <a>{user.friends?.find((f) => f._id === session.data.user.id) ? 'Remove Friend' : 'Add Friend'}</a>
+                      )}
+                    </li>
+                  </ul>
+                </div>
+              )
+          )}
+        </div>
 
         <div className="dropdown dropdown-hover dropdown-left">
           <a tabIndex={0} className="btn btn-secondary normal-case text-xl hover:cursor-pointer hover:bg-primary">
@@ -168,9 +203,13 @@ export default function CurrentChat() {
       <div className="h-full w-full flex flex-col px-2">
         {channel.channel?.messages?.map((message) => (
           <div key={message._id} className={`chat ${message.author._id === session.data?.user.id ? 'chat-end' : 'chat-start'}`}>
-            <div className="chat-image avatar">
-              <div className="w-10 rounded-full">
-                <Image src={message.author.image || '/default.png'} alt={`Avatar of ${message.author.username}`} height={100} width={100} priority />
+            <div className={`chat-image avatar ${!message.author.image && 'placeholder'}`}>
+              <div className={`w-10 rounded-full ${!message.author.image && 'bg-neutral-focus text-neutral-content'}`}>
+                {message.author.image ? (
+                  <Image src={message.author.image} alt={`Avatar of ${message.author.username}`} height={100} width={100} priority />
+                ) : (
+                  <span className="text-xs">{message.author.username[0].toUpperCase()}</span>
+                )}
               </div>
             </div>
             <div className="chat-bubble">
