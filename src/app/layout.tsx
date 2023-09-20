@@ -20,9 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <NextSessionProvider>
         <ChannelProvider>
           <FriendsProvider>
-            <body className={inter.className}>
+            <body className={`${inter.className} flex flex-col justify-between`}>
               <Navbar />
-              {children}
+              <div className="carousel carousel-vertical h-full">{children}</div>
               <Footer />
               <Analytics />
             </body>

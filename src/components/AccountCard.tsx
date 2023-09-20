@@ -120,7 +120,7 @@ export default function AccountCard() {
   });
 
   return (
-    <div className="card w-96 bg-base-100 shadow-xl">
+    <div className="card sm:w-96 bg-base-100 shadow-xl">
       <div className="flex flex-col items-center">
         <figure className="px-10 pt-10 flex gap-2">
           <Image src={session?.user.image || '/default.png'} alt="User image" width={96} height={96} priority className="rounded-xl mask" />
