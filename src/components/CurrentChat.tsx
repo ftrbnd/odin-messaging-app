@@ -149,6 +149,35 @@ export default function CurrentChat() {
     }
   };
 
+  const messageTimestamp = (timestamp: Date): string => {
+    const today = new Date();
+
+    if (timestamp.getFullYear() === today.getFullYear() && timestamp.getMonth() === today.getMonth() && timestamp.getDate() === today.getDate()) {
+      // same day
+      return timestamp.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } else if (timestamp.getFullYear() === today.getFullYear()) {
+      // same year
+      return timestamp.toLocaleTimeString([], {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } else {
+      return timestamp.toLocaleTimeString([], {
+        // different year
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+  };
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-between">
       <div className="navbar bg-neutral gap-2 justify-between">
@@ -220,12 +249,7 @@ export default function CurrentChat() {
               ))}
             </div>
             <div className="chat-footer opacity-50">
-              <time className="text-xs opacity-50">
-                {new Date(`${message.createdAt}`).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
-              </time>
+              <time className="text-xs opacity-50">{messageTimestamp(new Date(`${message.createdAt}`))}</time>
             </div>
           </div>
         ))}
