@@ -35,7 +35,6 @@
 
 ### Built With
 
-Client:
 * ![Vercel][Vercel]
 * [![Next][Next.js]][Next-url]
 * [![Typescript][Typescript]][Typescript-url]
